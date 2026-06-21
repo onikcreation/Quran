@@ -90,16 +90,17 @@
     --g100:       #15803D;
     --g200:       #16A34A;
     --g300:       #22C55E;
+    --g900:       #F0FDF4;
     --shadow-card:       0 1px 4px rgba(0,0,0,0.5);
     --shadow-card-hover: 0 6px 20px rgba(0,0,0,0.6);
     --sk-base:    #166534;
     --sk-shine:   #15803D;
-    --mekki-bg:   #14532D;
+    --mekki-bg:   #052E16;
     --mekki-text: #86EFAC;
-    --mekki-border:#166534;
+    --mekki-border: #22C55E;
     --madani-bg:  #1E3A5E;
     --madani-text:#BFDBFE;
-    --madani-border:#1D4ED8;
+    --madani-border: #60A5FA;
 }
 
 /* ============================================================
@@ -156,11 +157,15 @@ input  { font-family: inherit; }
 .brand-icon {
     width: 36px; height: 36px;
     border-radius: var(--r-md);
-    background: var(--accent);
-    color: #fff;
+    background: transparent;
     display: flex; align-items: center; justify-content: center;
-    font-size: 1.1rem;
     flex-shrink: 0;
+    overflow: hidden;
+}
+.brand-icon img {
+    width: 36px; height: 36px;
+    object-fit: contain;
+    display: block;
 }
 .brand-title {
     font-size: 1rem;
@@ -631,70 +636,166 @@ input  { font-family: inherit; }
 .coming-soon p  { font-size: 0.875rem; }
 
 /* ============================================================
-   12. SURAH DETAIL — Navigation bar
+   12. PAGE LAYOUT + SIDEBAR  (surah.html)
    ============================================================ */
-.surah-nav {
-    background: var(--bg-card);
-    border-bottom: 1px solid var(--border);
-    position: sticky;
-    top: 57px;
-    z-index: 90;
-    transition: background var(--tr-slow);
-}
-.surah-nav-content {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0.5rem 1.25rem;
-    display: flex; align-items: center; justify-content: space-between; gap: 0.6rem;
-}
-.btn-nav {
-    display: flex; align-items: center; gap: 0.3rem;
-    padding: 0.4rem 0.8rem;
-    border-radius: var(--r-full);
-    border: 1.5px solid var(--border);
-    background: var(--bg-card);
-    color: var(--text-m);
-    font-size: 0.8rem; font-weight: 500;
-    transition: background var(--tr), border-color var(--tr), color var(--tr);
-    font-family: 'Noto Sans Bengali', sans-serif;
-}
-.btn-nav:hover  { background: var(--accent-light); border-color: var(--accent); color: var(--accent); }
-.btn-nav:disabled { opacity: 0.38; cursor: not-allowed; }
-.btn-nav:disabled:hover { background: var(--bg-card); border-color: var(--border); color: var(--text-m); }
 
-.nav-center { display: flex; align-items: center; gap: 0.4rem; }
+/* Header-left group (sidebar toggle + back link) */
+.header-left {
+    display: flex; align-items: center; gap: 0.4rem; flex-shrink: 0;
+}
 
+/* Font controls (in header) */
 .font-controls {
     display: flex;
     border: 1.5px solid var(--border);
     border-radius: var(--r-full);
     overflow: hidden;
     background: var(--bg-card);
+    transition: border-color var(--tr-slow), background var(--tr-slow);
 }
 .font-btn {
     padding: 0.38rem 0.65rem;
-    font-size: 0.78rem; font-weight: 700;
+    font-size: 0.75rem; font-weight: 700;
     color: var(--text-m);
     transition: background var(--tr), color var(--tr);
 }
-.font-btn:hover { background: var(--accent-light); color: var(--accent); }
+.font-btn:hover  { background: var(--accent-light); color: var(--accent); }
 .font-btn:disabled { opacity: 0.35; cursor: not-allowed; }
 
-.btn-english-toggle {
-    padding: 0.38rem 0.8rem;
-    border-radius: var(--r-full);
-    border: 1.5px solid var(--border);
-    background: var(--bg-card);
-    color: var(--text-m);
-    font-size: 0.76rem; font-weight: 600;
-    font-family: inherit;
-    transition: background var(--tr), border-color var(--tr), color var(--tr);
+/* Two-column page layout */
+.surah-page { display: flex; flex-direction: column; min-height: 100vh; }
+
+.page-layout {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    height: calc(100vh - 57px);
 }
-.btn-english-toggle.active,
-.btn-english-toggle:hover {
-    background: var(--accent-light);
-    border-color: var(--accent);
-    color: var(--accent);
+
+/* SIDEBAR */
+.sidebar {
+    width: 255px;
+    min-width: 255px;
+    border-right: 1.5px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-card);
+    transition: background var(--tr-slow), border-color var(--tr-slow);
+    overflow: hidden;
+    flex-shrink: 0;
+}
+.sidebar-inner { display: flex; flex-direction: column; height: 100%; }
+
+.sidebar-tabs {
+    display: flex;
+    border-bottom: 1.5px solid var(--border);
+    flex-shrink: 0;
+    background: var(--bg-header);
+    transition: background var(--tr-slow), border-color var(--tr-slow);
+}
+.stab {
+    flex: 1;
+    padding: 0.65rem 0.5rem;
+    font-size: 0.875rem; font-weight: 600;
+    color: var(--text-m);
+    font-family: 'Noto Sans Bengali', sans-serif;
+    border-bottom: 2.5px solid transparent;
+    margin-bottom: -1.5px;
+    transition: color var(--tr), border-color var(--tr);
+    background: none; cursor: pointer;
+}
+.stab.active { color: var(--accent); border-bottom-color: var(--accent); }
+.stab:hover:not(.active) { color: var(--text-b); }
+
+.sidebar-para-coming {
+    padding: 1.25rem 0.75rem;
+    text-align: center;
+    color: var(--text-m);
+    font-size: 0.85rem;
+    font-family: 'Noto Sans Bengali', sans-serif;
+}
+
+.sidebar-body { display: flex; flex: 1; overflow: hidden; }
+
+.sidebar-panel {
+    flex: 1;
+    overflow-y: auto;
+    border-right: 1px solid var(--border);
+}
+
+/* Surah list items */
+.sbl-item {
+    display: flex; align-items: center; gap: 0.45rem;
+    padding: 0.5rem 0.6rem;
+    border-bottom: 1px solid var(--border);
+    text-decoration: none; color: inherit;
+    font-family: 'Noto Sans Bengali', sans-serif;
+    transition: background var(--tr), color var(--tr);
+}
+.sbl-item:hover  { background: var(--g50); color: var(--accent); text-decoration: none; }
+.sbl-item.active {
+    background: var(--g100);
+    border-left: 3px solid var(--accent);
+    padding-left: calc(0.6rem - 3px);
+}
+.sbl-item.active .sbl-name { color: var(--g800); font-weight: 700; }
+[data-theme="dark"] .sbl-item.active { background: var(--g50); }
+[data-theme="dark"] .sbl-item.active .sbl-name { color: var(--g300); }
+.sbl-num {
+    font-size: 0.68rem; color: var(--text-sm);
+    min-width: 18px; text-align: right; flex-shrink: 0;
+    font-family: 'Noto Sans Bengali', sans-serif;
+}
+.sbl-name {
+    font-size: 0.82rem; line-height: 1.3;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    color: var(--text-b); transition: color var(--tr);
+}
+
+/* Ayah number strip */
+.sidebar-ayah-strip {
+    width: 50px; flex-shrink: 0;
+    overflow-y: auto;
+    display: flex; flex-direction: column; align-items: center;
+}
+.strip-header {
+    font-size: 0.6rem; font-weight: 700;
+    color: var(--text-sm); letter-spacing: 0.04em;
+    padding: 0.45rem 0 0.3rem; text-align: center;
+    border-bottom: 1px solid var(--border); width: 100%;
+    flex-shrink: 0; font-family: 'Noto Sans Bengali', sans-serif;
+}
+#sidebar-ayah-nums {
+    display: flex; flex-direction: column; align-items: center;
+    width: 100%; padding: 0.2rem 0;
+}
+.ayah-strip-btn {
+    width: 36px; height: 25px;
+    border-radius: 4px;
+    font-size: 0.68rem; font-weight: 600;
+    color: var(--text-m);
+    font-family: 'Noto Sans Bengali', sans-serif;
+    display: flex; align-items: center; justify-content: center;
+    transition: background var(--tr), color var(--tr);
+    cursor: pointer; border: none; background: none; margin: 1px 0;
+}
+.ayah-strip-btn:hover  { background: var(--g50); color: var(--accent); }
+.ayah-strip-btn.active { background: var(--accent); color: #fff; }
+
+/* Mobile overlay */
+.sidebar-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.52);
+    z-index: 199;
+}
+.sidebar-overlay.show { display: block; }
+
+/* Main reading area */
+.surah-main {
+    flex: 1; overflow-y: auto;
+    padding: 1.1rem 1.25rem 2.5rem;
+    min-width: 0;
 }
 
 /* ============================================================
@@ -745,60 +846,69 @@ input  { font-family: inherit; }
 .bookmark-dismiss:hover { background: rgba(0,0,0,0.08); }
 
 /* ============================================================
-   14. SURAH DETAIL — Info card + content
+   14. SURAH DETAIL — Info header, bismillah, ayah cards
    ============================================================ */
-.surah-content {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 1.1rem 1.25rem 4rem;
-}
 
-/* Top info card (green gradient header) */
-.surah-info-card {
+/* Surah info header */
+.surah-info-header {
     background: linear-gradient(135deg, var(--g800) 0%, var(--g900) 100%);
     color: #fff;
     border-radius: var(--r-lg);
-    padding: 1.5rem 1.25rem;
-    margin-bottom: 1.1rem;
-    text-align: center;
+    padding: 1rem 1.25rem 0.875rem;
+    margin-bottom: 0.875rem;
+    transition: background var(--tr-slow);
 }
-.surah-info-arabic {
+.sih-skeleton { display: flex; flex-direction: column; gap: 6px; }
+.sih-inner {
+    display: flex; align-items: flex-start;
+    justify-content: space-between; gap: 1rem;
+}
+.sih-left { flex: 1; min-width: 0; }
+.sih-title {
+    font-family: 'Noto Sans Bengali', sans-serif;
+    font-size: 1.1rem; font-weight: 700;
+    margin-bottom: 0.2rem;
+    display: flex; align-items: baseline; gap: 0.45rem; flex-wrap: wrap;
+}
+.sih-arabic-inline {
     font-family: 'Amiri', serif;
-    font-size: 2rem;
-    direction: rtl;
-    line-height: 1.6;
-    margin-bottom: 0.4rem;
-    opacity: 0.95;
+    font-size: 1rem; direction: rtl; font-weight: 400; opacity: 0.9;
 }
-.surah-info-names {
-    font-size: 1.05rem;
-    font-weight: 700;
-    margin-bottom: 0.3rem;
+.sih-meaning {
+    font-size: 0.8rem; opacity: 0.78;
+    font-family: 'Noto Sans Bengali', sans-serif;
+    margin-bottom: 0.45rem;
+}
+.sih-tags { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; }
+.sih-tag {
+    font-size: 0.7rem; padding: 0.15rem 0.55rem;
+    border-radius: var(--r-full);
+    background: rgba(255,255,255,0.18);
+    color: rgba(255,255,255,0.92);
     font-family: 'Noto Sans Bengali', sans-serif;
 }
-.surah-info-meta {
-    font-size: 0.8rem;
-    opacity: 0.75;
-    display: flex; align-items: center; justify-content: center; gap: 0.5rem;
-}
-.surah-info-meta .dot { opacity: 0.4; }
 
-/* Bismillah */
-.bismillah-header {
-    text-align: center;
-    padding: 1.25rem 1rem 1.5rem;
-    margin-bottom: 1rem;
+/* Bismillah block */
+.bismillah-block {
+    background: var(--g50);
+    border: 1px solid var(--g200);
     border-radius: var(--r-lg);
-    border: 1px solid var(--border);
-    background: var(--g30);
+    padding: 1.1rem 1rem;
+    text-align: center;
+    margin-bottom: 0.875rem;
     transition: background var(--tr-slow), border-color var(--tr-slow);
 }
-.bismillah-text {
+.bismillah-arabic {
     font-family: 'Amiri', serif;
-    font-size: 1.9rem;
-    color: var(--g800);
-    direction: rtl;
-    line-height: 2;
+    font-size: 1.85rem; color: var(--g800);
+    direction: rtl; line-height: 2;
+    transition: color var(--tr-slow);
+}
+[data-theme="dark"] .bismillah-arabic { color: var(--g300); }
+.bismillah-bn {
+    font-size: 0.85rem; color: var(--text-m);
+    font-family: 'Noto Sans Bengali', sans-serif;
+    margin-top: 0.2rem;
 }
 
 /* ---- Ayah card ---- */
@@ -806,99 +916,181 @@ input  { font-family: inherit; }
     background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: var(--r-md);
-    padding: 1.1rem;
-    margin-bottom: 0.75rem;
-    transition:
-        background var(--tr-slow),
-        border-color var(--tr),
-        box-shadow var(--tr);
-    scroll-margin-top: 120px;
+    padding: 1rem 1.1rem 0.875rem;
+    margin-bottom: 0.65rem;
+    transition: background var(--tr-slow), border-color var(--tr), box-shadow var(--tr);
+    scroll-margin-top: 72px;
 }
 .ayah-card:hover  { box-shadow: var(--shadow-sm); }
 .ayah-card.playing {
-    border-color: var(--g500);
-    box-shadow: 0 0 0 2px rgba(76,175,80,0.2);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(22,163,74,0.15);
 }
 
-.ayah-header {
-    display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 0.875rem;
+/* Ayah top: number circle + Arabic */
+.ayah-top {
+    display: flex; align-items: flex-start;
+    gap: 0.65rem; margin-bottom: 0.65rem;
 }
-.ayah-badge {
-    width: 34px; height: 34px;
-    border-radius: var(--r-full);
-    background: var(--g50);
+.ayah-num-circle {
+    width: 31px; height: 31px;
+    border-radius: 50%;
+    background: var(--g50); border: 1.5px solid var(--g200);
     color: var(--g800);
-    font-size: 0.8rem; font-weight: 700;
+    font-size: 0.72rem; font-weight: 700;
     display: flex; align-items: center; justify-content: center;
-    border: 1.5px solid var(--g100);
-    font-family: 'Noto Sans Bengali', sans-serif;
     flex-shrink: 0;
+    font-family: 'Noto Sans Bengali', sans-serif;
     transition: background var(--tr-slow);
 }
+[data-theme="dark"] .ayah-num-circle {
+    background: var(--g100); color: #F0FDF4; border-color: var(--g200);
+}
 
-/* Play button */
-.play-btn {
-    width: 34px; height: 34px;
+.ayah-arabic {
+    font-family: 'Amiri', 'Scheherazade New', serif;
+    font-size: var(--arabic-size);
+    line-height: 2.1; direction: rtl; text-align: right;
+    color: var(--text-h); flex: 1; word-spacing: 0.08em;
+    transition: font-size var(--tr), color var(--tr-slow);
+}
+.arabic-font-sm .ayah-arabic { --arabic-size: var(--arabic-sm); }
+.arabic-font-lg .ayah-arabic { --arabic-size: var(--arabic-lg); }
+
+/* Bengali translation text */
+.ayah-bn-text {
+    font-family: 'Noto Sans Bengali', sans-serif;
+    font-size: 0.95rem; color: var(--text-b);
+    line-height: 1.85;
+    padding: 0.6rem 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 0.55rem;
+    transition: color var(--tr-slow), border-color var(--tr-slow);
+}
+.ayah-ref {
+    font-size: 0.8em; color: var(--g700); font-weight: 600;
+    margin-left: 0.25em; white-space: nowrap;
+    font-family: 'Noto Sans Bengali', sans-serif;
+}
+[data-theme="dark"] .ayah-ref { color: var(--g300); }
+
+/* Action bar */
+.ayah-action-bar {
+    display: flex; align-items: center;
+    gap: 0.3rem; flex-wrap: wrap;
+}
+.ayah-action-btn {
+    display: inline-flex; align-items: center; gap: 0.25rem;
+    padding: 0.25rem 0.6rem;
+    border-radius: var(--r-full);
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    color: var(--text-m);
+    font-size: 0.75rem; font-weight: 500;
+    font-family: 'Noto Sans Bengali', sans-serif;
+    cursor: pointer; white-space: nowrap;
+    transition: background var(--tr), border-color var(--tr), color var(--tr);
+}
+.ayah-action-btn:hover {
+    background: var(--g50);
+    border-color: var(--accent);
+    color: var(--accent);
+}
+.ayah-action-btn.active {
+    background: var(--accent-light);
+    border-color: var(--accent);
+    color: var(--accent);
+}
+.ayah-action-btn.playing {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.ayah-action-btn.loading::after {
+    content: '';
+    width: 11px; height: 11px;
+    border: 2px solid currentColor;
+    border-top-color: transparent;
+    border-radius: 50%;
+    display: block;
+    animation: spin 0.5s linear infinite;
+    flex-shrink: 0;
+}
+.ayah-action-btn.loading svg { display: none; }
+
+.ayah-num-badge-action {
+    width: 27px; height: 27px;
+    border-radius: 50%;
+    background: var(--accent); color: #fff;
+    font-size: 0.7rem; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Noto Sans Bengali', sans-serif;
+    flex-shrink: 0;
+}
+
+/* Tafsir / English translation panel */
+.tafsir-panel {
+    margin-top: 0.6rem;
+    padding: 0.8rem 0.9rem;
+    background: #FFFDE7;
+    border: 1px solid #EDD57A;
+    border-radius: var(--r-md);
+    border-left: 3px solid #D4A017;
+    transition: background var(--tr-slow), border-color var(--tr-slow);
+}
+[data-theme="dark"] .tafsir-panel {
+    background: #1A1500;
+    border-color: #4A3500;
+    border-left-color: #B8860B;
+}
+.tafsir-heading {
+    font-size: 0.8rem; font-weight: 700;
+    color: #8B6914;
+    font-family: 'Noto Sans Bengali', sans-serif;
+    margin-bottom: 0.3rem;
+}
+[data-theme="dark"] .tafsir-heading { color: #D4A017; }
+.tafsir-text {
+    font-family: 'Noto Sans Bengali', 'Inter', sans-serif;
+    font-size: 0.875rem; line-height: 1.85;
+    color: var(--text-b); font-style: italic;
+}
+
+/* Bottom prev/next nav */
+.surah-nav-bottom {
+    display: flex; justify-content: space-between; gap: 1rem;
+    margin-top: 1.75rem;
+    padding-top: 1.1rem;
+    border-top: 1px solid var(--border);
+    transition: border-color var(--tr-slow);
+}
+.btn-nav-bottom {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    padding: 0.5rem 1rem;
     border-radius: var(--r-full);
     border: 1.5px solid var(--border);
     background: var(--bg-card);
-    color: var(--accent);
-    display: flex; align-items: center; justify-content: center;
-    transition: background var(--tr), border-color var(--tr), transform var(--tr);
-    flex-shrink: 0;
-}
-.play-btn:hover  { background: var(--accent-light); border-color: var(--accent); transform: scale(1.08); }
-.play-btn.playing { background: var(--accent); color: #fff; border-color: var(--accent); }
-
-/* Arabic text */
-.arabic-text {
-    font-family: 'Amiri', 'Scheherazade New', serif;
-    font-size: var(--arabic-size);
-    line-height: 2.1;
-    direction: rtl;
-    text-align: right;
-    color: var(--text-h);
-    margin-bottom: 0.875rem;
-    word-spacing: 0.08em;
-    transition: font-size var(--tr), color var(--tr-slow);
-}
-
-/* Font size modifiers */
-.arabic-font-sm .arabic-text { --arabic-size: var(--arabic-sm); }
-.arabic-font-lg .arabic-text { --arabic-size: var(--arabic-lg); }
-
-/* Translations */
-.translation-block {
-    border-top: 1px solid var(--border);
-    padding-top: 0.75rem;
-    margin-top: 0.75rem;
-}
-.translation-label {
-    font-size: 0.65rem; font-weight: 700; letter-spacing: 0.07em;
-    text-transform: uppercase; color: var(--text-sm); margin-bottom: 0.3rem;
-}
-.bengali-translation {
-    font-family: 'Noto Sans Bengali', sans-serif;
-    font-size: 0.95rem;
-    color: var(--text-b);
-    line-height: 1.85;
-}
-.ayah-ref {
-    font-size: 0.8em;
-    color: var(--g700);
-    font-weight: 600;
-    margin-left: 0.3em;
-    white-space: nowrap;
-    font-family: 'Noto Sans Bengali', sans-serif;
-}
-.english-translation {
-    font-size: 0.875rem;
     color: var(--text-m);
-    line-height: 1.75;
-    font-style: italic;
+    font-size: 0.85rem; font-weight: 500;
+    font-family: 'Noto Sans Bengali', sans-serif;
+    cursor: pointer;
+    transition: background var(--tr), border-color var(--tr), color var(--tr);
 }
-.english-hidden .english-block { display: none !important; }
+.btn-nav-bottom:hover  { background: var(--g50); border-color: var(--accent); color: var(--accent); }
+.btn-nav-bottom:disabled { opacity: 0.35; cursor: not-allowed; }
+.btn-nav-bottom:disabled:hover { background: var(--bg-card); border-color: var(--border); color: var(--text-m); }
+
+/* Skeleton for ayah loading */
+.skeleton-ayah {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    padding: 1rem 1.1rem;
+    margin-bottom: 0.65rem;
+    display: flex; flex-direction: column; gap: 0.6rem;
+}
 
 /* ============================================================
    15. TOAST
@@ -952,18 +1144,49 @@ input  { font-family: inherit; }
 /* ============================================================
    18. RESPONSIVE
    ============================================================ */
+
+/* Desktop: hide hamburger */
+@media (min-width: 769px) {
+    #sidebar-toggle { display: none; }
+    .sidebar-overlay { display: none !important; }
+}
+
+/* Mobile: sidebar slides in */
+@media (max-width: 768px) {
+    .page-layout { height: auto; overflow: visible; }
+    .surah-main  { overflow-y: visible; padding: 0.875rem 1rem 2.5rem; }
+
+    .sidebar {
+        position: fixed;
+        left: -260px;
+        top: 57px;
+        height: calc(100vh - 57px);
+        z-index: 200;
+        transition: left var(--tr-slow), background var(--tr-slow);
+        box-shadow: 4px 0 24px rgba(0,0,0,0.18);
+    }
+    .sidebar.open { left: 0; }
+
+    .sidebar-overlay {
+        position: fixed; inset: 0;
+        background: rgba(0,0,0,0.52);
+        z-index: 199;
+        opacity: 0; pointer-events: none;
+        transition: opacity var(--tr-slow);
+        display: block;
+    }
+    .sidebar-overlay.show { opacity: 1; pointer-events: auto; }
+}
+
 @media (max-width: 480px) {
-    .header-content { padding: 0.5rem 1rem; }
+    .header-content  { padding: 0.5rem 0.875rem; gap: 0.5rem; }
     .brand-subtitle  { display: none; }
     .hero-section    { padding: 1.75rem 1rem 1.5rem; }
     .hero-title      { font-size: 1.5rem; }
-    .main-content, .surah-content { padding-left: 1rem; padding-right: 1rem; }
-    .surah-nav-content { padding: 0.4rem 1rem; }
-    .btn-nav span    { display: none; }
-    .btn-nav         { padding: 0.4rem 0.55rem; }
+    .main-content    { padding-left: 1rem; padding-right: 1rem; }
     .tab-btn         { padding: 0.8rem 1rem; font-size: 0.875rem; }
-    .ayah-card       { padding: 0.875rem; }
-    .surah-info-arabic { font-size: 1.6rem; }
+    .ayah-card       { padding: 0.875rem 0.875rem 0.75rem; }
+    .font-controls   { display: none; }
 }
 
 /* ============================================================

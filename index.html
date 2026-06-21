@@ -7,6 +7,10 @@
     <title>পবিত্র কুরআন | কুরআনের সূরাসমূহ</title>
     <meta name="description" content="বাংলা ও ইংরেজি অনুবাদ সহ পবিত্র কুরআনের ১১৪টি সূরার সম্পূর্ণ তালিকা এবং অডিও তিলাওয়াত।">
 
+    <link rel="icon" href="images/quran-icon.png" type="image/png">
+    <link rel="icon" href="images/quran-icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="images/quran-icon.png">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Inter:wght@400;500;600;700&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -20,7 +24,9 @@
     <header class="main-header" role="banner">
         <div class="header-content">
             <div class="brand">
-                <div class="brand-icon" aria-hidden="true">☪</div>
+                <div class="brand-icon" aria-hidden="true">
+                    <img src="images/quran-icon.png" alt="" width="36" height="36">
+                </div>
                 <div>
                     <div class="brand-title" data-bn="পবিত্র কুরআন" data-en="The Holy Quran">পবিত্র কুরআন</div>
                     <div class="brand-subtitle">Al-Quran Al-Kareem</div>
@@ -77,40 +83,11 @@
     </section>
 
     <!-- =============================================
-         TAB NAVIGATION
-         ============================================= -->
-    <nav class="tab-nav" role="tablist" aria-label="বিষয় নির্বাচন">
-        <div class="tab-nav-inner">
-            <button
-                id="tab-surah"
-                class="tab-btn active"
-                role="tab"
-                aria-selected="true"
-                aria-controls="panel-surah"
-                data-bn="সূরাসমূহ"
-                data-en="Surahs">
-                সূরাসমূহ
-            </button>
-            <button
-                id="tab-topic"
-                class="tab-btn"
-                role="tab"
-                aria-selected="false"
-                aria-controls="panel-topic"
-                data-bn="বিষয়ভিত্তিক"
-                data-en="By Topic">
-                বিষয়ভিত্তিক
-            </button>
-        </div>
-    </nav>
-
-    <!-- =============================================
          MAIN CONTENT
          ============================================= -->
     <main class="main-content" role="main">
 
-        <!-- PANEL: Surah list -->
-        <div id="panel-surah" role="tabpanel" aria-labelledby="tab-surah">
+        <div id="panel-surah">
 
             <!-- STATE 1: Loading skeleton -->
             <div id="loading-state" class="surah-grid" role="status" aria-label="লোড হচ্ছে..."></div>
@@ -133,17 +110,6 @@
 
             <!-- STATE 4: Surah grid -->
             <section id="surah-grid" class="surah-grid hidden" aria-label="সূরা তালিকা"></section>
-        </div>
-
-        <!-- PANEL: Topic (coming soon) -->
-        <div id="panel-topic" role="tabpanel" aria-labelledby="tab-topic" class="hidden">
-            <div class="coming-soon">
-                <div class="coming-soon-emoji">🚧</div>
-                <h3 data-bn="শীঘ্রই আসছে" data-en="Coming Soon">শীঘ্রই আসছে</h3>
-                <p data-bn="বিষয়ভিত্তিক কুরআন অনুসন্ধান ফিচারটি তৈরি হচ্ছে।" data-en="Topic-based Quran search feature is under development.">
-                    বিষয়ভিত্তিক কুরআন অনুসন্ধান ফিচারটি তৈরি হচ্ছে।
-                </p>
-            </div>
         </div>
 
     </main>

@@ -19,7 +19,6 @@ let searchTimer   = null;
 let surahGrid, loadingState, errorState, noResults;
 let searchInput, searchClear, searchCount;
 let langToggle, themeToggle, retryBtn, errorMsg;
-let tabSurah, tabTopic, panelSurah, panelTopic;
 
 // -------------------------------------------------------
 // Boot
@@ -36,11 +35,6 @@ document.addEventListener('DOMContentLoaded', () => {
     themeToggle  = document.getElementById('theme-toggle');
     retryBtn     = document.getElementById('retry-btn');
     errorMsg     = document.getElementById('error-msg');
-    tabSurah     = document.getElementById('tab-surah');
-    tabTopic     = document.getElementById('tab-topic');
-    panelSurah   = document.getElementById('panel-surah');
-    panelTopic   = document.getElementById('panel-topic');
-
     initTheme();
     currentLang = localStorage.getItem('quran_lang') || 'bn';
     applyLanguage();
@@ -53,8 +47,6 @@ document.addEventListener('DOMContentLoaded', () => {
     langToggle.addEventListener('click',   toggleLanguage);
     themeToggle.addEventListener('click',  toggleTheme);
     retryBtn.addEventListener('click',     loadSurahs);
-    tabSurah.addEventListener('click',     () => switchTab('surah'));
-    tabTopic.addEventListener('click',     () => switchTab('topic'));
 });
 
 // -------------------------------------------------------
@@ -102,19 +94,6 @@ function toggleLanguage() {
     currentLang = currentLang === 'bn' ? 'en' : 'bn';
     localStorage.setItem('quran_lang', currentLang);
     applyLanguage();
-}
-
-// -------------------------------------------------------
-// Tab switching
-// -------------------------------------------------------
-function switchTab(which) {
-    const isSurah = which === 'surah';
-    tabSurah.classList.toggle('active', isSurah);
-    tabTopic.classList.toggle('active', !isSurah);
-    tabSurah.setAttribute('aria-selected', isSurah);
-    tabTopic.setAttribute('aria-selected', !isSurah);
-    panelSurah.classList.toggle('hidden', !isSurah);
-    panelTopic.classList.toggle('hidden', isSurah);
 }
 
 // -------------------------------------------------------

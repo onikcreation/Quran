@@ -1,23 +1,22 @@
 <!DOCTYPE html>
-<!-- surah.html — v1.0 | পবিত্র কুরআন Web App — Surah Detail Page -->
-<!-- Usage: surah.html?id=1  (id = 1 to 114) -->
 <html lang="bn" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <!-- Title is updated dynamically by surah-detail.js -->
     <title>সূরা লোড হচ্ছে... | পবিত্র কুরআন</title>
     <meta name="description" content="আরবি টেক্সট, বাংলা ও ইংরেজি অনুবাদ এবং অডিও তিলাওয়াত সহ কুরআনের সূরা পড়ুন।">
 
-    <!-- Fonts -->
+    <link rel="icon" href="images/quran-icon.png" type="image/png">
+    <link rel="icon" href="images/quran-icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="images/quran-icon.png">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Inter:wght@400;500;600;700&family=Noto+Sans+Bengali:wght@400;500;600&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
+<body class="surah-page">
 
     <!-- =============================================
          HEADER
@@ -25,147 +24,178 @@
     <header class="main-header" role="banner">
         <div class="header-content">
 
-            <!-- Back to list -->
-            <a href="index.html" class="back-link" aria-label="সূরা তালিকায় ফিরুন">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-                     stroke="currentColor" stroke-width="2.5" aria-hidden="true">
-                    <path d="M19 12H5M12 19l-7-7 7-7"/>
-                </svg>
-                <span data-bn="তালিকা" data-en="List">তালিকা</span>
-            </a>
+            <div class="header-left">
+                <!-- Hamburger (mobile only) -->
+                <button type="button" class="btn-icon" id="sidebar-toggle" aria-label="সাইডবার খুলুন/বন্ধ করুন">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                        <line x1="3" y1="6"  x2="21" y2="6"/>
+                        <line x1="3" y1="12" x2="21" y2="12"/>
+                        <line x1="3" y1="18" x2="21" y2="18"/>
+                    </svg>
+                </button>
+                <!-- Back to list -->
+                <a href="index.html" class="back-link" aria-label="সূরা তালিকায় ফিরুন">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                    <span>তালিকা</span>
+                </a>
+            </div>
 
-            <!-- Surah name / meta (updated by JS) -->
+            <!-- Surah name (updated by JS) -->
             <div class="surah-header-title">
                 <h1 id="page-surah-name">—</h1>
-                <p id="page-surah-meta"></p>
             </div>
 
             <!-- Controls -->
             <div class="header-controls">
-                <button id="lang-toggle" class="btn-icon-text" aria-label="ভাষা পরিবর্তন">EN</button>
-                <button id="theme-toggle" class="btn-icon" aria-label="থিম পরিবর্তন">
+                <div class="font-controls" role="group" aria-label="Arabic font size">
+                    <button type="button" class="font-btn" id="font-decrease"
+                            aria-label="ফন্ট ছোট করুন" title="আরবি ফন্ট ছোট">A−</button>
+                    <button type="button" class="font-btn" id="font-increase"
+                            aria-label="ফন্ট বড় করুন" title="আরবি ফন্ট বড়">A+</button>
+                </div>
+                <button type="button" id="lang-toggle" class="btn-icon-text" aria-label="ভাষা পরিবর্তন">EN</button>
+                <button type="button" id="theme-toggle" class="btn-icon" aria-label="থিম পরিবর্তন">
                     <span class="theme-icon">🌙</span>
                 </button>
             </div>
         </div>
     </header>
 
+    <!-- Mobile sidebar overlay -->
+    <div class="sidebar-overlay" id="sidebar-overlay" aria-hidden="true"></div>
+
     <!-- =============================================
-         NAVIGATION BAR — sticky below header
+         PAGE LAYOUT  (sidebar + main)
          ============================================= -->
-    <nav class="surah-nav" aria-label="সূরা নেভিগেশন">
-        <div class="surah-nav-content">
+    <div class="page-layout">
 
-            <!-- Previous surah -->
-            <button id="prev-surah" class="btn-nav" aria-label="আগের সূরা">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-                     stroke="currentColor" stroke-width="2.5" aria-hidden="true">
-                    <path d="M15 18l-6-6 6-6"/>
-                </svg>
-                <span data-bn="আগের" data-en="Prev">আগের</span>
-            </button>
+        <!-- LEFT SIDEBAR -->
+        <aside class="sidebar" id="sidebar" aria-label="সূরা নেভিগেশন">
+            <div class="sidebar-inner">
 
-            <!-- Center controls: font size + English toggle -->
-            <div class="nav-center">
-                <div class="font-controls" role="group" aria-label="Arabic font size">
-                    <button id="font-decrease" class="font-btn" title="আরবি ফন্ট ছোট করুন" aria-label="Font decrease">A−</button>
-                    <button id="font-increase" class="font-btn" title="আরবি ফন্ট বড় করুন" aria-label="Font increase">A+</button>
+                <!-- Surah / Para tab switcher -->
+                <div class="sidebar-tabs">
+                    <button type="button" class="stab active" id="stab-surah">সূরা</button>
+                    <button type="button" class="stab"        id="stab-para">পারা</button>
                 </div>
 
-                <button id="btn-english-toggle" class="btn-english-toggle" aria-pressed="false">
-                    EN দেখুন
+                <!-- Panel + ayah strip side by side -->
+                <div class="sidebar-body">
+
+                    <!-- Surah list (সূরা tab) -->
+                    <div id="sidebar-surah-list" class="sidebar-panel">
+                        <!-- skeleton while loading -->
+                        <div id="sbl-skeleton">
+                            <div class="skeleton" style="height:36px;border-radius:0;margin:1px 0"></div>
+                            <div class="skeleton" style="height:36px;border-radius:0;margin:1px 0"></div>
+                            <div class="skeleton" style="height:36px;border-radius:0;margin:1px 0"></div>
+                            <div class="skeleton" style="height:36px;border-radius:0;margin:1px 0"></div>
+                            <div class="skeleton" style="height:36px;border-radius:0;margin:1px 0"></div>
+                            <div class="skeleton" style="height:36px;border-radius:0;margin:1px 0"></div>
+                        </div>
+                    </div>
+
+                    <!-- Para list (পারা tab) -->
+                    <div id="sidebar-para-list" class="sidebar-panel hidden">
+                        <div class="sidebar-para-coming">🚧 শীঘ্রই আসছে</div>
+                    </div>
+
+                    <!-- Ayah number quick-jump strip -->
+                    <div class="sidebar-ayah-strip" id="sidebar-ayah-strip">
+                        <div class="strip-header">আয়াত</div>
+                        <div id="sidebar-ayah-nums"></div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN READING AREA -->
+        <main class="surah-main" id="surah-main" role="main">
+
+            <!-- Surah info header (JS generated) -->
+            <div id="surah-info-header" class="surah-info-header" aria-live="polite">
+                <div class="sih-skeleton">
+                    <div class="skeleton" style="height:20px;width:55%;border-radius:5px"></div>
+                    <div class="skeleton" style="height:13px;width:32%;border-radius:4px;margin-top:6px"></div>
+                </div>
+            </div>
+
+            <!-- Bismillah (hidden for surah 1 and 9; shown by JS for others) -->
+            <div id="bismillah-block" class="bismillah-block hidden"
+                 aria-label="بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ">
+                <div class="bismillah-arabic">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
+                <div class="bismillah-bn">পরম করুণাময় ও অসীম দয়ালু আল্লাহর নামে</div>
+            </div>
+
+            <!-- Bookmark banner (shown by JS if saved position exists) -->
+            <div id="bookmark-banner" class="bookmark-banner hidden" role="status">
+                <div class="bookmark-inner">
+                    <span class="bookmark-icon" aria-hidden="true">🔖</span>
+                    <span class="bookmark-text" id="bookmark-text">আপনি আগে এখান পর্যন্ত পড়েছিলেন</span>
+                    <button type="button" class="bookmark-continue" id="bookmark-continue">সেখান থেকে যান</button>
+                    <button type="button" class="bookmark-dismiss" id="bookmark-dismiss" aria-label="বন্ধ করুন">✕</button>
+                </div>
+            </div>
+
+            <!-- STATE 1: Loading skeletons (JS fills this) -->
+            <div id="loading-state" role="status" aria-label="লোড হচ্ছে..."></div>
+
+            <!-- STATE 2: Error -->
+            <div id="error-state" class="error-container hidden" role="alert">
+                <div class="error-icon" aria-hidden="true">⚠️</div>
+                <h2 class="error-title">সূরা লোড করা যায়নি</h2>
+                <p class="error-msg" id="error-detail-msg">ইন্টারনেট সংযোগ পরীক্ষা করুন এবং আবার চেষ্টা করুন।</p>
+                <button type="button" id="retry-btn-detail" class="btn-primary">আবার চেষ্টা করুন</button>
+            </div>
+
+            <!-- STATE 3: Ayah cards (JS fills this) -->
+            <div id="ayah-list" class="hidden" aria-label="আয়াত সমূহ"></div>
+
+            <!-- Bottom: prev / next surah -->
+            <div class="surah-nav-bottom" id="surah-nav-bottom">
+                <button type="button" id="prev-surah" class="btn-nav-bottom" aria-label="আগের সূরা">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                        <path d="M15 18l-6-6 6-6"/>
+                    </svg>
+                    আগের সূরা
+                </button>
+                <button type="button" id="next-surah" class="btn-nav-bottom" aria-label="পরের সূরা">
+                    পরের সূরা
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                        <path d="M9 18l6-6-6-6"/>
+                    </svg>
                 </button>
             </div>
 
-            <!-- Next surah -->
-            <button id="next-surah" class="btn-nav" aria-label="পরের সূরা">
-                <span data-bn="পরের" data-en="Next">পরের</span>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-                     stroke="currentColor" stroke-width="2.5" aria-hidden="true">
-                    <path d="M9 18l6-6-6-6"/>
-                </svg>
-            </button>
-        </div>
-    </nav>
-
-    <!-- =============================================
-         BOOKMARK BANNER (shown by JS if user has a saved position)
-         ============================================= -->
-    <div id="bookmark-banner" class="bookmark-banner hidden" role="status">
-        <div class="bookmark-inner">
-            <span class="bookmark-icon" aria-hidden="true">🔖</span>
-            <span class="bookmark-text" id="bookmark-text">আপনি আগে এখান পর্যন্ত পড়েছিলেন</span>
-            <button class="bookmark-continue" id="bookmark-continue">সেখান থেকে যান</button>
-            <button class="bookmark-dismiss" id="bookmark-dismiss" aria-label="ব্যানার বন্ধ করুন">✕</button>
-        </div>
+        </main>
     </div>
-
-    <!-- =============================================
-         SURAH CONTENT
-         ============================================= -->
-    <main class="surah-content" role="main">
-
-        <!-- Surah info card (Arabic name, English translation etc.) — populated by JS -->
-        <div id="surah-info-card" class="surah-info-card" aria-live="polite">
-            <!-- Skeleton — replaced by JS once data loads -->
-            <div class="skeleton" style="height:38px;width:200px;margin:0 auto 0.5rem;border-radius:6px"></div>
-            <div class="skeleton" style="height:16px;width:160px;margin:0 auto 0.3rem;border-radius:4px"></div>
-            <div class="skeleton" style="height:13px;width:120px;margin:0 auto;border-radius:4px"></div>
-        </div>
-
-        <!-- - - - - - - - - - - - - - - - - - - - - -
-             STATE 1: Loading skeleton ayahs
-             - - - - - - - - - - - - - - - - - - - - - -->
-        <div id="loading-state" role="status" aria-label="আয়াত লোড হচ্ছে...">
-            <!-- Skeleton cards injected by surah-detail.js -->
-        </div>
-
-        <!-- - - - - - - - - - - - - - - - - - - - - -
-             STATE 2: Error
-             - - - - - - - - - - - - - - - - - - - - - -->
-        <div id="error-state" class="error-container hidden" role="alert">
-            <div class="error-icon" aria-hidden="true">⚠️</div>
-            <h2 class="error-title" data-bn="সূরা লোড করা যায়নি" data-en="Failed to load surah">
-                সূরা লোড করা যায়নি
-            </h2>
-            <p class="error-msg" id="error-detail-msg">
-                ইন্টারনেট সংযোগ পরীক্ষা করুন এবং আবার চেষ্টা করুন।
-            </p>
-            <button id="retry-btn-detail" class="btn-primary" data-bn="আবার চেষ্টা করুন" data-en="Retry">
-                আবার চেষ্টা করুন
-            </button>
-        </div>
-
-        <!-- - - - - - - - - - - - - - - - - - - - - -
-             STATE 3: Ayah list (populated by JS)
-             - - - - - - - - - - - - - - - - - - - - - -->
-        <div id="ayah-list" class="hidden" aria-label="আয়াত সমূহ">
-            <!-- Bismillah header (if applicable) + ayah cards injected by surah-detail.js -->
-        </div>
-
-    </main>
 
     <!-- =============================================
          FOOTER
          ============================================= -->
     <footer class="main-footer" role="contentinfo">
         <p>
-            <span data-bn="ডেটা সূত্র:" data-en="Data source:">ডেটা সূত্র:</span>
+            <span>ডেটা সূত্র:</span>
             <a href="https://alquran.cloud" target="_blank" rel="noopener noreferrer">AlQuran Cloud API</a>
             &nbsp;·&nbsp;
-            <span data-bn="তিলাওয়াত:" data-en="Recitation:">তিলাওয়াত:</span>
+            <span>তিলাওয়াত:</span>
             Sheikh Mishary Al-Afasy
         </p>
     </footer>
 
-    <!-- Hidden audio player — JS controls src and playback -->
-    <!-- preload="none" saves bandwidth; we set src when user clicks play -->
+    <!-- Hidden audio player -->
     <audio id="quran-audio" preload="none" aria-hidden="true"></audio>
 
-    <!-- Toast notification -->
+    <!-- Toast -->
     <div id="toast" class="toast" role="alert" aria-live="assertive"></div>
 
-    <!-- Scripts: api.js must load first -->
+    <!-- Scripts: api.js first -->
     <script src="js/api.js"></script>
     <script src="js/surah-detail.js"></script>
 </body>
