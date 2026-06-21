@@ -7,53 +7,53 @@
    1. CSS VARIABLES
    ============================================================ */
 :root {
-    /* Green palette */
-    --g900: #1B5E20;
-    --g800: #2E7D32;
-    --g700: #388E3C;
-    --g500: #4CAF50;
-    --g300: #81C784;
-    --g200: #A5D6A7;
-    --g100: #C8E6C9;
-    --g50:  #E8F5E9;
-    --g30:  #F1F8F2;
+    /* Tailwind Green palette (primary: green-600 = #16A34A) */
+    --g900: #14532D;
+    --g800: #166534;
+    --g700: #15803D;
+    --g500: #22C55E;
+    --g300: #86EFAC;
+    --g200: #BBF7D0;
+    --g100: #DCFCE7;
+    --g50:  #F0FDF4;
+    --g30:  #F7FFFE;
 
     /* Page */
-    --bg-page:    #F4FAF4;
+    --bg-page:    #F0FDF4;
     --bg-card:    #FFFFFF;
     --bg-header:  #FFFFFF;
-    --bg-hero:    #0B1A0C;
+    --bg-hero:    #052E16;
 
-    /* Text */
-    --text-h:  #1A1A1A;
-    --text-b:  #3D3D3D;
-    --text-m:  #6B6B6B;
-    --text-sm: #9E9E9E;
+    /* Text — Tailwind Gray */
+    --text-h:  #1F2937;
+    --text-b:  #374151;
+    --text-m:  #6B7280;
+    --text-sm: #9CA3AF;
 
-    /* Accent */
-    --accent:       #2E7D32;
-    --accent-hover: #1B5E20;
-    --accent-light: #E8F5E9;
+    /* Accent — Tailwind green-600 */
+    --accent:       #16A34A;
+    --accent-hover: #15803D;
+    --accent-light: #F0FDF4;
     --accent-text:  #FFFFFF;
 
     /* Tags */
-    --mekki-bg:     #E8F5E9;
-    --mekki-text:   #1B5E20;
-    --mekki-border: #A5D6A7;
-    --madani-bg:    #E3F2FD;
-    --madani-text:  #0D47A1;
-    --madani-border:#90CAF9;
+    --mekki-bg:     #DCFCE7;
+    --mekki-text:   #166534;
+    --mekki-border: #86EFAC;
+    --madani-bg:    #EFF6FF;
+    --madani-text:  #1D4ED8;
+    --madani-border:#BFDBFE;
 
     /* Borders & shadows */
-    --border:            #DFF0DF;
-    --border-focus:      #2E7D32;
-    --shadow-card:       0 1px 4px rgba(0,80,0,0.07), 0 0 0 1px rgba(0,80,0,0.04);
-    --shadow-card-hover: 0 6px 20px rgba(0,80,0,0.14), 0 2px 6px rgba(0,80,0,0.08);
+    --border:            #DCFCE7;
+    --border-focus:      #16A34A;
+    --shadow-card:       0 1px 4px rgba(0,0,0,0.06), 0 0 0 1px rgba(22,163,74,0.06);
+    --shadow-card-hover: 0 6px 20px rgba(22,163,74,0.15), 0 2px 6px rgba(0,0,0,0.06);
     --shadow-sm:         0 1px 3px rgba(0,0,0,0.07);
 
     /* Skeleton */
-    --sk-base:  #E0EEE0;
-    --sk-shine: #EEF5EE;
+    --sk-base:  #DCFCE7;
+    --sk-shine: #F0FDF4;
 
     /* Transitions */
     --tr:      0.18s ease;
@@ -74,32 +74,32 @@
 
 /* Dark theme */
 [data-theme="dark"] {
-    --bg-page:    #0A130A;
-    --bg-card:    #111E11;
-    --bg-header:  #0C180C;
-    --bg-hero:    #060E06;
-    --text-h:     #E8F5E8;
-    --text-b:     #A8C8A8;
-    --text-m:     #6A8A6A;
-    --text-sm:    #4A6A4A;
-    --accent:     #4CAF50;
-    --accent-hover:#66BB6A;
-    --accent-light:#0A1F0A;
-    --border:     #1A3A1A;
-    --g50:        #0A1F0A;
-    --g100:       #152815;
-    --g200:       #1E3A1E;
-    --g300:       #2A5A2A;
+    --bg-page:    #052E16;
+    --bg-card:    #14532D;
+    --bg-header:  #166534;
+    --bg-hero:    #022C16;
+    --text-h:     #F0FDF4;
+    --text-b:     #BBF7D0;
+    --text-m:     #86EFAC;
+    --text-sm:    #4ADE80;
+    --accent:     #22C55E;
+    --accent-hover:#16A34A;
+    --accent-light:#14532D;
+    --border:     #166534;
+    --g50:        #14532D;
+    --g100:       #15803D;
+    --g200:       #16A34A;
+    --g300:       #22C55E;
     --shadow-card:       0 1px 4px rgba(0,0,0,0.5);
     --shadow-card-hover: 0 6px 20px rgba(0,0,0,0.6);
-    --sk-base:    #152815;
-    --sk-shine:   #1E381E;
-    --mekki-bg:   #0A1F0A;
-    --mekki-text: #81C784;
-    --mekki-border:#2A4A2A;
-    --madani-bg:  #070F1F;
-    --madani-text:#90CAF9;
-    --madani-border:#1A304A;
+    --sk-base:    #166534;
+    --sk-shine:   #15803D;
+    --mekki-bg:   #14532D;
+    --mekki-text: #86EFAC;
+    --mekki-border:#166534;
+    --madani-bg:  #1E3A5E;
+    --madani-text:#BFDBFE;
+    --madani-border:#1D4ED8;
 }
 
 /* ============================================================
@@ -254,20 +254,14 @@ input  { font-family: inherit; }
    4. HERO SECTION  (index.html)
    ============================================================ */
 .hero-section {
-    /* ---- Unsplash ছবি (Quran Kareem, Kashan, Iran — AmirHadi Manavi) ---- */
+    /* ---- Unsplash: open Quran on wooden table ---- */
     background-image:
-        linear-gradient(to bottom, rgba(5,15,5,0.55) 0%, rgba(5,15,5,0.78) 100%),
-        url('https://images.unsplash.com/photo-1703492897922-befb3b3d148c?auto=format&fit=crop&w=1920&q=85');
+        linear-gradient(to bottom, rgba(5,20,10,0.52) 0%, rgba(5,20,10,0.80) 100%),
+        url('https://plus.unsplash.com/premium_photo-1676208746513-59d3b93d4aad?auto=format&fit=crop&w=1920&q=85');
 
-    /* বিকল্প ছবি: কাঠের টেবিলে খোলা বই
+    /* নিজের ছবি ব্যবহার করতে চাইলে — ফাইল quran-app/ ফোল্ডারে রাখুন:
     background-image:
-        linear-gradient(to bottom, rgba(5,15,5,0.55) 0%, rgba(5,15,5,0.78) 100%),
-        url('https://images.unsplash.com/photo-1645821522708-898c52901a8c?auto=format&fit=crop&w=1920&q=85');
-    */
-
-    /* নিজের ছবি ব্যবহার করতে চাইলে (quran-bg.jpg ফাইল quran-app/ ফোল্ডারে রাখুন):
-    background-image:
-        linear-gradient(to bottom, rgba(5,15,5,0.55) 0%, rgba(5,15,5,0.78) 100%),
+        linear-gradient(to bottom, rgba(5,20,10,0.52) 0%, rgba(5,20,10,0.80) 100%),
         url('../quran-bg.jpg');
     */
 
