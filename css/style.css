@@ -254,23 +254,32 @@ input  { font-family: inherit; }
    4. HERO SECTION  (index.html)
    ============================================================ */
 .hero-section {
-    /*
-     * প্রকৃত ছবি ব্যবহার করতে চাইলে নিচের লাইনটি uncomment করুন
-     * এবং 'quran-bg.jpg' আপনার ছবির নাম দিন:
-     * background-image: url('../quran-bg.jpg');
-     * background-size: cover;
-     * background-position: center 40%;
-     */
-    background-color: var(--bg-hero);
+    /* ---- Unsplash ছবি (Quran Kareem, Kashan, Iran — AmirHadi Manavi) ---- */
     background-image:
-        radial-gradient(ellipse 70% 55% at 50% 75%, rgba(160,90,20,0.28) 0%, transparent 65%),
-        linear-gradient(165deg, #0c1f0c 0%, #142a10 45%, #0a1808 100%);
+        linear-gradient(to bottom, rgba(5,15,5,0.55) 0%, rgba(5,15,5,0.78) 100%),
+        url('https://images.unsplash.com/photo-1703492897922-befb3b3d148c?auto=format&fit=crop&w=1920&q=85');
+
+    /* বিকল্প ছবি: কাঠের টেবিলে খোলা বই
+    background-image:
+        linear-gradient(to bottom, rgba(5,15,5,0.55) 0%, rgba(5,15,5,0.78) 100%),
+        url('https://images.unsplash.com/photo-1645821522708-898c52901a8c?auto=format&fit=crop&w=1920&q=85');
+    */
+
+    /* নিজের ছবি ব্যবহার করতে চাইলে (quran-bg.jpg ফাইল quran-app/ ফোল্ডারে রাখুন):
+    background-image:
+        linear-gradient(to bottom, rgba(5,15,5,0.55) 0%, rgba(5,15,5,0.78) 100%),
+        url('../quran-bg.jpg');
+    */
+
+    background-color: var(--bg-hero);
+    background-size: cover;
+    background-position: center 40%;
     position: relative;
     padding: 2.5rem 1.25rem 2rem;
     text-align: center;
     color: #fff;
     overflow: hidden;
-    transition: background var(--tr-slow);
+    transition: background-color var(--tr-slow);
 }
 
 /* subtle star-like pattern overlay */
