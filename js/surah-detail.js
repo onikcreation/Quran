@@ -1,9 +1,8 @@
 // ============================================================
-// surah-detail.js — v1.0
-// Controls the Surah Detail page (surah.html)
-// Handles: URL param reading, parallel data fetch, ayah
-//          rendering, audio playback, English toggle,
-//          font-size adjuster, bookmarks, prev/next nav
+// surah-detail.js — v2.0
+// Surah detail page (surah.html)
+// New in v2: Bengali numerals in badges, bracket ref after
+//            each Bengali translation, updated UI strings
 // ============================================================
 
 'use strict';
@@ -12,54 +11,45 @@
 // State
 // -------------------------------------------------------
 let currentSurahId = 1;
-let surahData = null;          // { arabic, bengali, english }
-let currentLang = 'bn';        // UI language from localStorage
-let showEnglish = false;       // Whether English translations are visible
-let arabicFontSize = 'md';     // 'sm' | 'md' | 'lg'
+let surahData      = null;
+let currentLang    = 'bn';
+let showEnglish    = false;
+let arabicFontSize = 'md';
 
-// Audio state
-let audioElement = null;       // the single <audio> element on the page
-let playingAyahId = null;      // global ayah number currently playing
-let playingBtn = null;         // the play button DOM node currently active
+let audioElement  = null;
+let playingGlobal = null;   // global ayah number currently playing
+let playingBtn    = null;
 
 // -------------------------------------------------------
 // Init
 // -------------------------------------------------------
 document.addEventListener('DOMContentLoaded', () => {
-    // Parse surah ID from URL: surah.html?id=2
     const params = new URLSearchParams(window.location.search);
-    currentSurahId = parseInt(params.get('id'), 10);
-    if (!currentSurahId || currentSurahId < 1 || currentSurahId > 114) {
-        currentSurahId = 1; // graceful fallback
-    }
+    currentSurahId = Math.min(114, Math.max(1, parseInt(params.get('id'), 10) || 1));
 
-    // Restore preferences
-    currentLang    = localStorage.getItem('quran_lang')       || 'bn';
-    arabicFontSize = localStorage.getItem('quran_font_size')  || 'md';
-    showEnglish    = localStorage.getItem('quran_show_en') === 'true';
+    currentLang    = localStorage.getItem('quran_lang')      || 'bn';
+    arabicFontSize = localStorage.getItem('quran_font_size') || 'md';
+    showEnglish    = localStorage.getItem('quran_show_en')   === 'true';
 
-    // Grab audio element
     audioElement = document.getElementById('quran-audio');
-    audioElement.addEventListener('ended',  onAudioEnded);
-    audioElement.addEventListener('error',  onAudioError);
+    audioElement.addEventListener('ended', onAudioEnded);
+    audioElement.addEventListener('error', onAudioError);
 
-    // Apply theme (same logic as list page)
     initTheme();
     applyLanguage();
     applyFontSize();
-    updateEnglishToggleBtn();
+    syncEnglishBtn();
+    updateNavButtons();
+    loadSurah();
 
     // Wire controls
-    document.getElementById('lang-toggle').addEventListener('click', toggleLanguage);
-    document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
-    document.getElementById('prev-surah').addEventListener('click', () => navigate(-1));
-    document.getElementById('next-surah').addEventListener('click', () => navigate(1));
-    document.getElementById('font-decrease').addEventListener('click', () => changeFontSize(-1));
-    document.getElementById('font-increase').addEventListener('click', () => changeFontSize(1));
-    document.getElementById('btn-english-toggle').addEventListener('click', toggleEnglish);
-
-    // Load surah data
-    loadSurah();
+    document.getElementById('lang-toggle').addEventListener('click',       toggleLanguage);
+    document.getElementById('theme-toggle').addEventListener('click',      toggleTheme);
+    document.getElementById('prev-surah').addEventListener('click',        () => navigate(-1));
+    document.getElementById('next-surah').addEventListener('click',        () => navigate(1));
+    document.getElementById('font-decrease').addEventListener('click',     () => changeFontSize(-1));
+    document.getElementById('font-increase').addEventListener('click',     () => changeFontSize(1));
+    document.getElementById('btn-english-toggle').addEventListener('click',toggleEnglish);
 });
 
 // -------------------------------------------------------
@@ -67,21 +57,17 @@ document.addEventListener('DOMContentLoaded', () => {
 // -------------------------------------------------------
 function initTheme() {
     const saved = localStorage.getItem('quran_theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    setTheme(saved || (prefersDark ? 'dark' : 'light'));
+    const sys   = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    setTheme(saved || (sys ? 'dark' : 'light'));
 }
-
 function setTheme(theme) {
     document.documentElement.setAttribute('data-theme', theme);
     const btn = document.getElementById('theme-toggle');
-    if (btn) {
-        btn.querySelector('.theme-icon').textContent = theme === 'dark' ? '☀️' : '🌙';
-    }
+    if (btn) btn.querySelector('.theme-icon').textContent = theme === 'dark' ? '☀️' : '🌙';
 }
-
 function toggleTheme() {
-    const current = document.documentElement.getAttribute('data-theme') || 'light';
-    const next = current === 'dark' ? 'light' : 'dark';
+    const cur  = document.documentElement.getAttribute('data-theme') || 'light';
+    const next = cur === 'dark' ? 'light' : 'dark';
     setTheme(next);
     localStorage.setItem('quran_theme', next);
 }
@@ -91,45 +77,37 @@ function toggleTheme() {
 // -------------------------------------------------------
 function applyLanguage() {
     const btn = document.getElementById('lang-toggle');
-    if (btn) {
-        btn.textContent = currentLang === 'bn' ? 'EN' : 'বাং';
-    }
-    // Swap all data-bn / data-en text nodes
+    if (btn) btn.textContent = currentLang === 'bn' ? 'EN' : 'বাং';
     document.querySelectorAll('[data-bn]').forEach(el => {
         el.textContent = currentLang === 'bn'
             ? el.getAttribute('data-bn')
             : el.getAttribute('data-en');
     });
+    syncEnglishBtn();
 }
-
 function toggleLanguage() {
     currentLang = currentLang === 'bn' ? 'en' : 'bn';
     localStorage.setItem('quran_lang', currentLang);
     applyLanguage();
-    // Re-render if data is loaded (surah name in header changes)
     if (surahData) updateHeaderInfo();
 }
 
 // -------------------------------------------------------
-// Font size (Arabic text)
+// Arabic font size
 // -------------------------------------------------------
-const FONT_SIZES = ['sm', 'md', 'lg'];
+const SIZES = ['sm', 'md', 'lg'];
 
 function applyFontSize() {
-    const ayahList = document.getElementById('ayah-list');
-    if (!ayahList) return;
-    ayahList.classList.remove('arabic-font-sm', 'arabic-font-md', 'arabic-font-lg');
-    if (arabicFontSize !== 'md') {
-        ayahList.classList.add(`arabic-font-${arabicFontSize}`);
-    }
-    // Update button states
+    const list = document.getElementById('ayah-list');
+    if (!list) return;
+    list.classList.remove('arabic-font-sm', 'arabic-font-md', 'arabic-font-lg');
+    if (arabicFontSize !== 'md') list.classList.add(`arabic-font-${arabicFontSize}`);
     document.getElementById('font-decrease').disabled = arabicFontSize === 'sm';
     document.getElementById('font-increase').disabled = arabicFontSize === 'lg';
 }
-
-function changeFontSize(direction) {
-    const idx = FONT_SIZES.indexOf(arabicFontSize);
-    const next = FONT_SIZES[Math.max(0, Math.min(FONT_SIZES.length - 1, idx + direction))];
+function changeFontSize(dir) {
+    const idx  = SIZES.indexOf(arabicFontSize);
+    const next = SIZES[Math.max(0, Math.min(SIZES.length - 1, idx + dir))];
     if (next === arabicFontSize) return;
     arabicFontSize = next;
     localStorage.setItem('quran_font_size', arabicFontSize);
@@ -137,53 +115,45 @@ function changeFontSize(direction) {
 }
 
 // -------------------------------------------------------
-// English translation toggle
+// English toggle
 // -------------------------------------------------------
 function toggleEnglish() {
     showEnglish = !showEnglish;
     localStorage.setItem('quran_show_en', showEnglish);
-    updateEnglishToggleBtn();
-
-    const ayahList = document.getElementById('ayah-list');
-    if (ayahList) {
-        ayahList.classList.toggle('english-hidden', !showEnglish);
-    }
+    syncEnglishBtn();
+    document.getElementById('ayah-list')
+        ?.classList.toggle('english-hidden', !showEnglish);
 }
-
-function updateEnglishToggleBtn() {
+function syncEnglishBtn() {
     const btn = document.getElementById('btn-english-toggle');
     if (!btn) return;
     btn.classList.toggle('active', showEnglish);
     btn.textContent = showEnglish
         ? (currentLang === 'bn' ? 'EN লুকান' : 'Hide EN')
-        : (currentLang === 'bn' ? 'EN দেখুন' : 'Show EN');
+        : (currentLang === 'bn' ? 'EN দেখুন'  : 'Show EN');
+    btn.setAttribute('aria-pressed', showEnglish);
 }
 
 // -------------------------------------------------------
-// Navigation (Prev / Next surah)
+// Navigation
 // -------------------------------------------------------
-function navigate(direction) {
-    const next = currentSurahId + direction;
+function navigate(dir) {
+    const next = currentSurahId + dir;
     if (next < 1 || next > 114) return;
     window.location.href = `surah.html?id=${next}`;
 }
-
 function updateNavButtons() {
     document.getElementById('prev-surah').disabled = currentSurahId <= 1;
     document.getElementById('next-surah').disabled = currentSurahId >= 114;
 }
 
 // -------------------------------------------------------
-// Load surah data
+// Load surah
 // -------------------------------------------------------
 async function loadSurah() {
     showLoadingState();
-    updateNavButtons();
-
     try {
-        // getSurahAllData is defined in api.js — fetches all 3 editions in parallel
-        surahData = await getSurahAllData(currentSurahId);
-
+        surahData = await getSurahAllData(currentSurahId);  // api.js
         updateHeaderInfo();
         renderAyahs();
         checkBookmark();
@@ -193,40 +163,33 @@ async function loadSurah() {
 }
 
 // -------------------------------------------------------
-// Update header title / meta after data loads
+// Header / info card
 // -------------------------------------------------------
 function updateHeaderInfo() {
-    const s = surahData.arabic;
-
-    // getBengaliName() is defined in api.js (loaded first)
-    const bengaliName = getBengaliName(s.number) || s.englishName;
-
-    const displayName = currentLang === 'bn' ? bengaliName : s.englishName;
-    const revType     = s.revelationType;
-    const revLabel    = currentLang === 'bn'
-        ? (revType === 'Meccan' ? 'মক্কী' : 'মাদানী')
-        : revType;
+    const s           = surahData.arabic;
+    const bnName      = getBengaliName(s.number)    || s.englishName;    // api.js
+    const bnMeaning   = getBengaliMeaning(s.number) || '';               // api.js
+    const displayName = currentLang === 'bn' ? bnName : s.englishName;
+    const isMekki     = s.revelationType === 'Meccan';
+    const revLabel    = currentLang === 'bn' ? (isMekki ? 'মক্কী' : 'মাদানী') : s.revelationType;
     const ayahLabel   = currentLang === 'bn'
-        ? `${s.numberOfAyahs} আয়াত`
+        ? `${toBengaliNumber(s.numberOfAyahs)} আয়াত`   // api.js
         : `${s.numberOfAyahs} ayahs`;
 
-    // Update <head> title for the browser tab
-    document.title = `সূরা ${s.number}: ${displayName} | পবিত্র কুরআন`;
+    document.title = `সূরা ${toBengaliNumber(s.number)}: ${displayName} | পবিত্র কুরআন`;
 
-    // Header title elements
     const nameEl = document.getElementById('page-surah-name');
     const metaEl = document.getElementById('page-surah-meta');
-    if (nameEl) nameEl.textContent = `${s.number}. ${displayName}`;
+    if (nameEl) nameEl.textContent = `${toBengaliNumber(s.number)}. ${displayName}`;
     if (metaEl) metaEl.textContent = `${ayahLabel} · ${revLabel}`;
 
-    // Surah info card at top of content
-    const infoCard = document.getElementById('surah-info-card');
-    if (infoCard) {
-        infoCard.innerHTML = `
+    const card = document.getElementById('surah-info-card');
+    if (card) {
+        card.innerHTML = `
             <div class="surah-info-arabic">${s.name}</div>
-            <div class="surah-info-names">${displayName} · ${s.englishNameTranslation}</div>
+            <div class="surah-info-names">${displayName}${bnMeaning ? ' — ' + bnMeaning : ''}</div>
             <div class="surah-info-meta">
-                <span>${s.number}/${114}</span>
+                <span>${toBengaliNumber(s.number)} / ${toBengaliNumber(114)}</span>
                 <span class="dot">·</span>
                 <span>${ayahLabel}</span>
                 <span class="dot">·</span>
@@ -237,19 +200,20 @@ function updateHeaderInfo() {
 }
 
 // -------------------------------------------------------
-// Render all ayah cards
+// Render ayah cards
 // -------------------------------------------------------
 function renderAyahs() {
-    const ayahList = document.getElementById('ayah-list');
-    const arabicAyahs  = surahData.arabic.ayahs;
-    const bengaliAyahs = surahData.bengali ? surahData.bengali.ayahs : [];
-    const englishAyahs = surahData.english ? surahData.english.ayahs : [];
+    const list   = document.getElementById('ayah-list');
+    const arAyahs = surahData.arabic.ayahs;
+    const bnAyahs = surahData.bengali ? surahData.bengali.ayahs : [];
+    const enAyahs = surahData.english ? surahData.english.ayahs : [];
 
-    // Bismillah header: show for surahs 2–114 except surah 9 (At-Tawbah has no Bismillah)
-    const showBismillah = currentSurahId !== 1 && currentSurahId !== 9;
+    const surahBnName = getBengaliName(currentSurahId); // for bracket ref
+
+    // Bismillah header (shown for all surahs except 1 and 9)
     let html = '';
-
-    if (showBismillah) {
+    const showBism = currentSurahId !== 1 && currentSurahId !== 9;
+    if (showBism) {
         html += `
             <div class="bismillah-header">
                 <div class="bismillah-text">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
@@ -257,19 +221,27 @@ function renderAyahs() {
         `;
     }
 
-    // Build each ayah card
-    arabicAyahs.forEach((ayah, i) => {
-        const bnText = bengaliAyahs[i] ? bengaliAyahs[i].text : '';
-        const enText = englishAyahs[i] ? englishAyahs[i].text : '';
+    // Build ayah cards
+    arAyahs.forEach((ayah, i) => {
+        const bnText = bnAyahs[i] ? bnAyahs[i].text : '';
+        const enText = enAyahs[i] ? enAyahs[i].text : '';
+
+        // Bengali number badge
+        const bnNum = toBengaliNumber(ayah.numberInSurah);
+
+        // Bracket reference appended after Bengali translation
+        // e.g. [আল-ফাতিহা: ১]
+        const bracketRef = `[${surahBnName}: ${bnNum}]`;
 
         const bnBlock = bnText ? `
             <div class="translation-block">
-                <div class="translation-label">${currentLang === 'bn' ? 'বাংলা' : 'Bengali'}</div>
-                <div class="bengali-translation">${escapeHtml(bnText)}</div>
+                <div class="translation-label">বাংলা</div>
+                <div class="bengali-translation">
+                    ${escapeHtml(bnText)}<span class="ayah-ref">${bracketRef}</span>
+                </div>
             </div>
         ` : '';
 
-        // English block — gets hidden/shown by the .english-hidden class on the list container
         const enBlock = enText ? `
             <div class="translation-block english-block">
                 <div class="translation-label">English</div>
@@ -280,16 +252,16 @@ function renderAyahs() {
         html += `
             <div class="ayah-card" id="ayah-${ayah.numberInSurah}" data-ayah="${ayah.numberInSurah}">
                 <div class="ayah-header">
-                    <div class="ayah-badge" title="আয়াত ${ayah.numberInSurah}">${ayah.numberInSurah}</div>
-                    <button
+                    <div class="ayah-badge" title="আয়াত ${bnNum}" aria-label="আয়াত ${ayah.numberInSurah}">
+                        ${bnNum}
+                    </div>
+                    <button type="button"
                         class="play-btn"
                         data-global="${ayah.number}"
                         data-local="${ayah.numberInSurah}"
-                        title="তিলাওয়াত শুনুন (আয়াত ${ayah.numberInSurah})"
-                        aria-label="Play ayah ${ayah.numberInSurah}"
-                    >
-                        ${playIcon()}
-                    </button>
+                        aria-label="আয়াত ${ayah.numberInSurah} তিলাওয়াত শুনুন"
+                        title="তিলাওয়াত শুনুন"
+                    >${playIcon()}</button>
                 </div>
                 <div class="arabic-text">${ayah.text}</div>
                 ${bnBlock}
@@ -298,58 +270,39 @@ function renderAyahs() {
         `;
     });
 
-    ayahList.innerHTML = html;
+    list.innerHTML = html;
 
-    // Apply current font size & English visibility
     applyFontSize();
-    ayahList.classList.toggle('english-hidden', !showEnglish);
+    list.classList.toggle('english-hidden', !showEnglish);
+    list.querySelectorAll('.play-btn').forEach(btn =>
+        btn.addEventListener('click', onPlayClick));
 
-    // Attach click handlers to all play buttons
-    ayahList.querySelectorAll('.play-btn').forEach(btn => {
-        btn.addEventListener('click', onPlayClick);
-    });
-
-    // Show the ayah list, hide loading
     document.getElementById('loading-state').classList.add('hidden');
-    ayahList.classList.remove('hidden');
+    list.classList.remove('hidden');
 
-    // Set up Intersection Observer to auto-save bookmark as user reads
     setupBookmarkObserver();
 }
 
 // -------------------------------------------------------
-// Audio playback
+// Audio
 // -------------------------------------------------------
 function onPlayClick(e) {
-    const btn = e.currentTarget;
+    const btn       = e.currentTarget;
     const globalNum = parseInt(btn.dataset.global, 10);
-    const localNum  = parseInt(btn.dataset.local, 10);
-    const surahNum  = currentSurahId;
+    const localNum  = parseInt(btn.dataset.local,  10);
 
-    // If same ayah is playing → pause it
-    if (playingAyahId === globalNum && !audioElement.paused) {
+    // Tap same playing ayah → pause
+    if (playingGlobal === globalNum && !audioElement.paused) {
         audioElement.pause();
-        setPlayingState(null, null);
+        resetPlayingState();
         return;
     }
 
-    // Stop any currently playing audio
-    if (!audioElement.paused) {
-        audioElement.pause();
-    }
-    if (playingBtn) {
-        resetBtn(playingBtn);
-    }
-    if (playingAyahId) {
-        document.getElementById(`ayah-${getLocalFromGlobal(playingAyahId)}`)
-            ?.classList.remove('playing');
-    }
+    // Stop whatever is currently playing
+    stopCurrent();
 
-    // Start new audio
-    const audioUrl = buildAudioUrl(globalNum); // defined in api.js
-    audioElement.src = audioUrl;
-
-    // Show loading state on the button while audio buffers
+    // Play new ayah
+    audioElement.src = buildAudioUrl(globalNum);  // api.js
     btn.classList.add('loading');
     btn.innerHTML = '';
 
@@ -358,175 +311,164 @@ function onPlayClick(e) {
             btn.classList.remove('loading');
             btn.innerHTML = pauseIcon();
             btn.classList.add('playing');
-            setPlayingState(globalNum, btn);
+            playingGlobal = globalNum;
+            playingBtn    = btn;
             document.getElementById(`ayah-${localNum}`)?.classList.add('playing');
         })
         .catch(err => {
             btn.classList.remove('loading');
             btn.innerHTML = playIcon();
-            setPlayingState(null, null);
             showToast(currentLang === 'bn'
-                ? 'অডিও চালানো যায়নি। ইন্টারনেট সংযোগ পরীক্ষা করুন।'
+                ? 'অডিও চালানো যায়নি। নেটওয়ার্ক পরীক্ষা করুন।'
                 : 'Could not play audio. Check your connection.');
-            console.error('Audio play failed:', err);
+            console.error('Audio error:', err);
         });
 }
 
-// Helper: store currently playing ayah global number and button
-function setPlayingState(globalNum, btn) {
-    playingAyahId = globalNum;
-    playingBtn = btn;
-}
-
-// We need local ayah number from global — find in rendered data
-function getLocalFromGlobal(globalNum) {
-    if (!surahData) return null;
-    const found = surahData.arabic.ayahs.find(a => a.number === globalNum);
-    return found ? found.numberInSurah : null;
-}
-
-function onAudioEnded() {
-    if (playingBtn) {
-        resetBtn(playingBtn);
+function stopCurrent() {
+    if (!audioElement.paused) audioElement.pause();
+    if (playingBtn) resetBtn(playingBtn);
+    if (playingGlobal !== null) {
+        const localNum = getLocalNum(playingGlobal);
+        if (localNum) document.getElementById(`ayah-${localNum}`)?.classList.remove('playing');
     }
-    const localNum = getLocalFromGlobal(playingAyahId);
-    if (localNum) {
-        document.getElementById(`ayah-${localNum}`)?.classList.remove('playing');
-    }
-    setPlayingState(null, null);
+    playingGlobal = null;
+    playingBtn    = null;
 }
 
+function resetPlayingState() {
+    if (playingBtn) resetBtn(playingBtn);
+    if (playingGlobal !== null) {
+        const local = getLocalNum(playingGlobal);
+        if (local) document.getElementById(`ayah-${local}`)?.classList.remove('playing');
+    }
+    playingGlobal = null;
+    playingBtn    = null;
+}
+
+function onAudioEnded() { resetPlayingState(); }
 function onAudioError() {
-    onAudioEnded();
-    showToast(currentLang === 'bn'
-        ? 'অডিও লোড হয়নি।'
-        : 'Audio failed to load.');
+    resetPlayingState();
+    showToast(currentLang === 'bn' ? 'অডিও লোড হয়নি।' : 'Audio failed to load.');
 }
 
 function resetBtn(btn) {
     btn.classList.remove('playing', 'loading');
     btn.innerHTML = playIcon();
 }
+function getLocalNum(globalNum) {
+    if (!surahData) return null;
+    return surahData.arabic.ayahs.find(a => a.number === globalNum)?.numberInSurah ?? null;
+}
 
-// SVG icons for play / pause
 function playIcon() {
-    return `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+    return `<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
         <polygon points="5,3 19,12 5,21"/>
     </svg>`;
 }
 function pauseIcon() {
-    return `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+    return `<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
         <rect x="6" y="4" width="4" height="16"/>
         <rect x="14" y="4" width="4" height="16"/>
     </svg>`;
 }
 
 // -------------------------------------------------------
-// Bookmark: save last-read ayah using IntersectionObserver
+// Bookmark
 // -------------------------------------------------------
 function setupBookmarkObserver() {
     if (!('IntersectionObserver' in window)) return;
-
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const ayahNum = parseInt(entry.target.dataset.ayah, 10);
-                saveBookmark(currentSurahId, ayahNum); // from api.js
+    const obs = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+            if (e.isIntersecting) {
+                saveBookmark(currentSurahId, parseInt(e.target.dataset.ayah, 10));
             }
         });
     }, { threshold: 0.5 });
-
-    document.querySelectorAll('.ayah-card').forEach(card => observer.observe(card));
+    document.querySelectorAll('.ayah-card').forEach(c => obs.observe(c));
 }
 
 function checkBookmark() {
-    const saved = loadBookmark(currentSurahId); // from api.js
+    const saved = loadBookmark(currentSurahId);   // api.js
     if (!saved || saved <= 1) return;
 
-    const banner    = document.getElementById('bookmark-banner');
-    const textEl    = document.getElementById('bookmark-text');
-    const continueBtn = document.getElementById('bookmark-continue');
-    const dismissBtn  = document.getElementById('bookmark-dismiss');
+    const banner  = document.getElementById('bookmark-banner');
+    const textEl  = document.getElementById('bookmark-text');
+    const contBtn = document.getElementById('bookmark-continue');
+    const dismissBtn = document.getElementById('bookmark-dismiss');
 
-    const msg = currentLang === 'bn'
-        ? `আপনি আয়াত ${saved} পর্যন্ত পড়েছিলেন`
+    textEl.textContent = currentLang === 'bn'
+        ? `আপনি আয়াত ${toBengaliNumber(saved)} পর্যন্ত পড়েছিলেন`
         : `You read up to ayah ${saved}`;
-    textEl.textContent = msg;
-
+    contBtn.textContent = currentLang === 'bn' ? 'সেখান থেকে যান' : 'Jump there';
     banner.classList.remove('hidden');
 
-    continueBtn.textContent = currentLang === 'bn' ? 'সেখান থেকে যান' : 'Jump there';
-    continueBtn.onclick = () => {
+    contBtn.onclick = () => {
         banner.classList.add('hidden');
-        const target = document.getElementById(`ayah-${saved}`);
-        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        document.getElementById(`ayah-${saved}`)
+            ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     };
     dismissBtn.onclick = () => {
         banner.classList.add('hidden');
-        clearBookmark(currentSurahId); // from api.js
+        clearBookmark(currentSurahId);   // api.js
     };
 }
 
 // -------------------------------------------------------
-// Loading / Error state helpers
+// Loading / error states
 // -------------------------------------------------------
 function showLoadingState() {
-    const loading = document.getElementById('loading-state');
+    const loading  = document.getElementById('loading-state');
     const ayahList = document.getElementById('ayah-list');
-    const errorDiv = document.getElementById('error-state');
+    const errDiv   = document.getElementById('error-state');
 
-    // Generate skeleton ayah cards
     loading.innerHTML = Array.from({ length: 5 }, (_, i) => `
         <div class="skeleton-ayah">
             <div class="ayah-header">
-                <div class="skeleton skeleton-circle" style="width:36px;height:36px"></div>
-                <div class="skeleton skeleton-circle" style="width:36px;height:36px"></div>
+                <div class="skeleton" style="width:34px;height:34px;border-radius:50%"></div>
+                <div class="skeleton" style="width:34px;height:34px;border-radius:50%"></div>
             </div>
-            <div class="skeleton skeleton-arabic ${i % 2 === 0 ? '' : 'skeleton-arabic-2'}"></div>
-            <div class="skeleton skeleton-arabic-2"></div>
-            <div style="height:0.5rem"></div>
-            <div class="skeleton skeleton-line skeleton-line-w100" style="height:14px"></div>
-            <div class="skeleton skeleton-line skeleton-line-w70"  style="height:14px"></div>
+            <div class="skeleton" style="height:32px;width:${i%2===0?'80%':'65%'};margin-left:auto;border-radius:6px"></div>
+            <div class="skeleton" style="height:32px;width:${i%2===0?'55%':'72%'};margin-left:auto;border-radius:6px;margin-top:6px"></div>
+            <div style="height:8px"></div>
+            <div class="skeleton" style="height:13px;width:100%;border-radius:4px"></div>
+            <div class="skeleton" style="height:13px;width:70%;border-radius:4px;margin-top:5px"></div>
         </div>
     `).join('');
 
     loading.classList.remove('hidden');
     ayahList.classList.add('hidden');
-    errorDiv.classList.add('hidden');
+    errDiv.classList.add('hidden');
 }
 
 function showErrorState(message) {
     document.getElementById('loading-state').classList.add('hidden');
     document.getElementById('ayah-list').classList.add('hidden');
-
-    const errorDiv = document.getElementById('error-state');
-    const msgEl    = document.getElementById('error-detail-msg');
+    const errDiv  = document.getElementById('error-state');
+    const msgEl   = document.getElementById('error-detail-msg');
     if (msgEl) msgEl.textContent = message || 'ইন্টারনেট সংযোগ পরীক্ষা করুন।';
-    errorDiv.classList.remove('hidden');
-
-    document.getElementById('retry-btn-detail')?.addEventListener('click', loadSurah, { once: true });
+    errDiv.classList.remove('hidden');
+    document.getElementById('retry-btn-detail')
+        ?.addEventListener('click', loadSurah, { once: true });
 }
 
 // -------------------------------------------------------
-// Toast notification
+// Toast
 // -------------------------------------------------------
-function showToast(message, durationMs = 3000) {
-    const toast = document.getElementById('toast');
-    if (!toast) return;
-    toast.textContent = message;
-    toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), durationMs);
+function showToast(msg, ms = 3000) {
+    const t = document.getElementById('toast');
+    if (!t) return;
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), ms);
 }
 
 // -------------------------------------------------------
-// Utility: escape HTML to prevent XSS when rendering API text
+// XSS protection: escape user-facing API text
 // -------------------------------------------------------
 function escapeHtml(str) {
     if (!str) return '';
     return str
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }

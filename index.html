@@ -1,59 +1,34 @@
 <!DOCTYPE html>
-<!-- index.html — v1.0 | পবিত্র কুরআন Web App — Surah List Page -->
+<!-- index.html — v2.0 | পবিত্র কুরআন — Surah List Page -->
 <html lang="bn" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>পবিত্র কুরআন | কুরআনের সূরাসমূহ</title>
+    <meta name="description" content="বাংলা ও ইংরেজি অনুবাদ সহ পবিত্র কুরআনের ১১৪টি সূরার সম্পূর্ণ তালিকা এবং অডিও তিলাওয়াত।">
 
-    <title>পবিত্র কুরআন | সূরা তালিকা</title>
-    <meta name="description" content="বাংলা ও ইংরেজি অনুবাদ সহ পবিত্র কুরআনের ১১৪টি সূরার সম্পূর্ণ তালিকা।">
-
-    <!-- Open Graph (for social sharing) -->
-    <meta property="og:title" content="পবিত্র কুরআন">
-    <meta property="og:description" content="বাংলা ও ইংরেজি অনুবাদ সহ অনলাইন কুরআন রিডার।">
-    <meta property="og:type" content="website">
-
-    <!-- Google Fonts:
-         Amiri      — Arabic text (beautiful Naskh script)
-         Inter      — English / UI text
-         Noto Sans Bengali — Bengali text -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Inter:wght@400;500;600;700&family=Noto+Sans+Bengali:wght@400;500;600&display=swap" rel="stylesheet">
-
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Inter:wght@400;500;600;700&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
     <!-- =============================================
-         HEADER — sticky at top
+         STICKY HEADER
          ============================================= -->
     <header class="main-header" role="banner">
         <div class="header-content">
-
-            <!-- Brand / Logo -->
             <div class="brand">
                 <div class="brand-icon" aria-hidden="true">☪</div>
-                <div class="brand-text">
-                    <h1 class="brand-title" data-bn="পবিত্র কুরআন" data-en="The Holy Quran">পবিত্র কুরআন</h1>
-                    <p class="brand-subtitle" data-bn="আল-কুরআন আল-কারীম" data-en="Al-Quran Al-Kareem">আল-কুরআন আল-কারীম</p>
+                <div>
+                    <div class="brand-title" data-bn="পবিত্র কুরআন" data-en="The Holy Quran">পবিত্র কুরআন</div>
+                    <div class="brand-subtitle">Al-Quran Al-Kareem</div>
                 </div>
             </div>
-
-            <!-- Controls: language toggle + dark mode -->
             <div class="header-controls">
-                <button
-                    id="lang-toggle"
-                    class="btn-icon-text"
-                    title="Switch to English"
-                    aria-label="ভাষা পরিবর্তন">
-                    EN
-                </button>
-                <button
-                    id="theme-toggle"
-                    class="btn-icon"
-                    title="Dark mode চালু করুন"
-                    aria-label="থিম পরিবর্তন">
+                <button id="lang-toggle" class="btn-icon-text" aria-label="ভাষা পরিবর্তন">EN</button>
+                <button id="theme-toggle" class="btn-icon" aria-label="থিম পরিবর্তন">
                     <span class="theme-icon">🌙</span>
                 </button>
             </div>
@@ -61,77 +36,115 @@
     </header>
 
     <!-- =============================================
-         MAIN CONTENT
+         HERO SECTION  (banner + search)
          ============================================= -->
-    <main class="main-content" role="main">
+    <section class="hero-section" aria-label="কুরআন সার্চ">
+        <div class="hero-content">
+            <h1 class="hero-title" data-bn="কুরআনের সূরাসমূহ" data-en="Surahs of the Quran">
+                কুরআনের সূরাসমূহ
+            </h1>
+            <p class="hero-subtitle" data-bn="আল-কুরআন আল-কারীম" data-en="Al-Quran Al-Kareem">
+                আল-কুরআন আল-কারীম
+            </p>
+            <p class="hero-total" data-bn="মোট সূরা — ১১৪ টি" data-en="Total Surahs — 114">
+                মোট সূরা — ১১৪ টি
+            </p>
 
-        <!-- Search Box -->
-        <section class="search-section" aria-label="সূরা খুঁজুন">
-            <div class="search-wrapper">
-                <!-- Search icon (SVG, not emoji — scales cleanly) -->
-                <svg class="search-icon" viewBox="0 0 24 24" fill="none"
+            <p class="hero-search-label" data-bn="শব্দ দিয়ে অনুসন্ধান" data-en="Search by keyword">
+                শব্দ দিয়ে অনুসন্ধান
+            </p>
+
+            <div class="hero-search-wrapper">
+                <svg class="hero-search-icon" viewBox="0 0 24 24" fill="none"
                      stroke="currentColor" stroke-width="2" aria-hidden="true">
                     <circle cx="11" cy="11" r="8"/>
                     <path d="m21 21-4.35-4.35"/>
                 </svg>
-
                 <input
                     type="search"
                     id="search-input"
-                    class="search-input"
-                    placeholder="সূরার নাম বা নম্বর দিয়ে খুঁজুন..."
+                    class="hero-search-input"
+                    placeholder="সূরার নাম বা নম্বর লিখুন..."
                     autocomplete="off"
                     spellcheck="false"
-                    aria-label="সূরা সার্চ করুন"
+                    aria-label="সূরা খুঁজুন"
                 >
-
-                <!-- Clear button — hidden until user types -->
-                <button id="search-clear" class="search-clear hidden" aria-label="সার্চ মুছুন">
-                    ✕
-                </button>
+                <button id="search-clear" class="hero-search-clear hidden" aria-label="মুছুন">✕</button>
             </div>
 
-            <!-- Result count (shown after search) -->
             <p id="search-count" class="search-count hidden" role="status" aria-live="polite"></p>
-        </section>
-
-        <!-- - - - - - - - - - - - - - - - - - - - - -
-             STATE 1: Loading skeleton (default visible)
-             - - - - - - - - - - - - - - - - - - - - - -->
-        <div id="loading-state" class="surah-grid" role="status" aria-label="লোড হচ্ছে...">
-            <!-- Skeleton cards injected by surah-list.js -->
         </div>
+    </section>
 
-        <!-- - - - - - - - - - - - - - - - - - - - - -
-             STATE 2: Error
-             - - - - - - - - - - - - - - - - - - - - - -->
-        <div id="error-state" class="error-container hidden" role="alert">
-            <div class="error-icon" aria-hidden="true">⚠️</div>
-            <h2 class="error-title" data-bn="ডেটা লোড করা যায়নি" data-en="Failed to load data">
-                ডেটা লোড করা যায়নি
-            </h2>
-            <p class="error-msg" id="error-msg">ইন্টারনেট সংযোগ পরীক্ষা করুন।</p>
-            <button id="retry-btn" class="btn-primary" data-bn="আবার চেষ্টা করুন" data-en="Retry">
-                আবার চেষ্টা করুন
+    <!-- =============================================
+         TAB NAVIGATION
+         ============================================= -->
+    <nav class="tab-nav" role="tablist" aria-label="বিষয় নির্বাচন">
+        <div class="tab-nav-inner">
+            <button
+                id="tab-surah"
+                class="tab-btn active"
+                role="tab"
+                aria-selected="true"
+                aria-controls="panel-surah"
+                data-bn="সূরাসমূহ"
+                data-en="Surahs">
+                সূরাসমূহ
+            </button>
+            <button
+                id="tab-topic"
+                class="tab-btn"
+                role="tab"
+                aria-selected="false"
+                aria-controls="panel-topic"
+                data-bn="বিষয়ভিত্তিক"
+                data-en="By Topic">
+                বিষয়ভিত্তিক
             </button>
         </div>
+    </nav>
 
-        <!-- - - - - - - - - - - - - - - - - - - - - -
-             STATE 3: No search results
-             - - - - - - - - - - - - - - - - - - - - - -->
-        <div id="no-results" class="no-results hidden" role="status">
-            <div class="no-results-emoji" aria-hidden="true">🔍</div>
-            <p data-bn="কোনো সূরা পাওয়া যায়নি।" data-en="No surahs found.">
-                কোনো সূরা পাওয়া যায়নি।
-            </p>
+    <!-- =============================================
+         MAIN CONTENT
+         ============================================= -->
+    <main class="main-content" role="main">
+
+        <!-- PANEL: Surah list -->
+        <div id="panel-surah" role="tabpanel" aria-labelledby="tab-surah">
+
+            <!-- STATE 1: Loading skeleton -->
+            <div id="loading-state" class="surah-grid" role="status" aria-label="লোড হচ্ছে..."></div>
+
+            <!-- STATE 2: Error -->
+            <div id="error-state" class="error-container hidden" role="alert">
+                <div class="error-icon" aria-hidden="true">⚠️</div>
+                <h2 class="error-title" data-bn="ডেটা লোড করা যায়নি" data-en="Failed to load data">
+                    ডেটা লোড করা যায়নি
+                </h2>
+                <p class="error-msg" id="error-msg">ইন্টারনেট সংযোগ পরীক্ষা করুন।</p>
+                <button id="retry-btn" class="btn-primary">আবার চেষ্টা করুন</button>
+            </div>
+
+            <!-- STATE 3: No results -->
+            <div id="no-results" class="no-results hidden" role="status">
+                <div class="no-results-emoji" aria-hidden="true">🔍</div>
+                <p data-bn="কোনো সূরা পাওয়া যায়নি।" data-en="No surahs found.">কোনো সূরা পাওয়া যায়নি।</p>
+            </div>
+
+            <!-- STATE 4: Surah grid -->
+            <section id="surah-grid" class="surah-grid hidden" aria-label="সূরা তালিকা"></section>
         </div>
 
-        <!-- - - - - - - - - - - - - - - - - - - - - -
-             STATE 4: Surah grid (populated by JS)
-             - - - - - - - - - - - - - - - - - - - - - -->
-        <section id="surah-grid" class="surah-grid hidden" aria-label="সূরা তালিকা">
-            <!-- Surah cards injected by surah-list.js -->
-        </section>
+        <!-- PANEL: Topic (coming soon) -->
+        <div id="panel-topic" role="tabpanel" aria-labelledby="tab-topic" class="hidden">
+            <div class="coming-soon">
+                <div class="coming-soon-emoji">🚧</div>
+                <h3 data-bn="শীঘ্রই আসছে" data-en="Coming Soon">শীঘ্রই আসছে</h3>
+                <p data-bn="বিষয়ভিত্তিক কুরআন অনুসন্ধান ফিচারটি তৈরি হচ্ছে।" data-en="Topic-based Quran search feature is under development.">
+                    বিষয়ভিত্তিক কুরআন অনুসন্ধান ফিচারটি তৈরি হচ্ছে।
+                </p>
+            </div>
+        </div>
 
     </main>
 
@@ -140,20 +153,16 @@
          ============================================= -->
     <footer class="main-footer" role="contentinfo">
         <p>
-            <span data-bn="ডেটা সূত্র:" data-en="Data source:">ডেটা সূত্র:</span>
-            <a href="https://alquran.cloud" target="_blank" rel="noopener noreferrer">
-                AlQuran Cloud API
-            </a>
+            <span data-bn="ডেটা সূত্র:" data-en="Source:">ডেটা সূত্র:</span>
+            <a href="https://alquran.cloud" target="_blank" rel="noopener">AlQuran Cloud API</a>
             &nbsp;·&nbsp;
             <span data-bn="তিলাওয়াত:" data-en="Recitation:">তিলাওয়াত:</span>
-            <span>Sheikh Mishary Al-Afasy</span>
+            Sheikh Mishary Al-Afasy
         </p>
     </footer>
 
-    <!-- Toast notification (shown by JS) -->
     <div id="toast" class="toast" role="alert" aria-live="assertive"></div>
 
-    <!-- Scripts: api.js first (surah-list.js depends on it) -->
     <script src="js/api.js"></script>
     <script src="js/surah-list.js"></script>
 </body>

@@ -1,8 +1,6 @@
 // ============================================================
-// surah-list.js — v1.0
-// Controls the Surah List page (index.html)
-// Handles: data loading, card rendering, search, language &
-//          theme toggling, localStorage caching via api.js
+// surah-list.js — v2.0
+// Surah list page (index.html) — redesigned Islamic green UI
 // ============================================================
 
 'use strict';
@@ -10,23 +8,23 @@
 // -------------------------------------------------------
 // State
 // -------------------------------------------------------
-let allSurahs = [];          // full list fetched from API
-let filteredSurahs = [];     // subset after search filter
-let currentLang = 'bn';      // 'bn' (Bengali) | 'en' (English)
-let searchDebounceTimer = null;
+let allSurahs     = [];
+let filteredSurahs= [];
+let currentLang   = 'bn';
+let searchTimer   = null;
 
 // -------------------------------------------------------
-// DOM references (resolved after DOMContentLoaded)
+// DOM refs
 // -------------------------------------------------------
 let surahGrid, loadingState, errorState, noResults;
 let searchInput, searchClear, searchCount;
 let langToggle, themeToggle, retryBtn, errorMsg;
+let tabSurah, tabTopic, panelSurah, panelTopic;
 
 // -------------------------------------------------------
-// Initialise on page load
+// Boot
 // -------------------------------------------------------
 document.addEventListener('DOMContentLoaded', () => {
-    // Grab all DOM nodes once
     surahGrid    = document.getElementById('surah-grid');
     loadingState = document.getElementById('loading-state');
     errorState   = document.getElementById('error-state');
@@ -38,84 +36,68 @@ document.addEventListener('DOMContentLoaded', () => {
     themeToggle  = document.getElementById('theme-toggle');
     retryBtn     = document.getElementById('retry-btn');
     errorMsg     = document.getElementById('error-msg');
+    tabSurah     = document.getElementById('tab-surah');
+    tabTopic     = document.getElementById('tab-topic');
+    panelSurah   = document.getElementById('panel-surah');
+    panelTopic   = document.getElementById('panel-topic');
 
-    // 1. Apply saved theme (or system preference)
     initTheme();
-
-    // 2. Apply saved language
     currentLang = localStorage.getItem('quran_lang') || 'bn';
     applyLanguage();
-
-    // 3. Show skeleton while loading
     renderSkeletons(12);
-
-    // 4. Fetch surah list
     loadSurahs();
 
-    // 5. Wire up event listeners
-    searchInput.addEventListener('input', onSearchInput);
-    searchClear.addEventListener('click', clearSearch);
-    langToggle.addEventListener('click', toggleLanguage);
-    themeToggle.addEventListener('click', toggleTheme);
-    retryBtn.addEventListener('click', loadSurahs);
+    // Events
+    searchInput.addEventListener('input',  onSearchInput);
+    searchClear.addEventListener('click',  clearSearch);
+    langToggle.addEventListener('click',   toggleLanguage);
+    themeToggle.addEventListener('click',  toggleTheme);
+    retryBtn.addEventListener('click',     loadSurahs);
+    tabSurah.addEventListener('click',     () => switchTab('surah'));
+    tabTopic.addEventListener('click',     () => switchTab('topic'));
 });
 
 // -------------------------------------------------------
-// Theme management
+// Theme
 // -------------------------------------------------------
 function initTheme() {
-    // Check localStorage first; fall back to system preference
     const saved = localStorage.getItem('quran_theme');
-    if (saved) {
-        setTheme(saved);
-    } else {
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        setTheme(prefersDark ? 'dark' : 'light');
-    }
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    setTheme(saved || (prefersDark ? 'dark' : 'light'));
 }
-
 function setTheme(theme) {
     document.documentElement.setAttribute('data-theme', theme);
-    // Update icon: moon for light mode (invite to switch to dark), sun for dark mode
     if (themeToggle) {
-        themeToggle.querySelector('.theme-icon').textContent = (theme === 'dark') ? '☀️' : '🌙';
-        themeToggle.setAttribute('title', theme === 'dark' ? 'Light mode-এ যান' : 'Dark mode-এ যান');
+        themeToggle.querySelector('.theme-icon').textContent = theme === 'dark' ? '☀️' : '🌙';
     }
 }
-
 function toggleTheme() {
-    const current = document.documentElement.getAttribute('data-theme') || 'light';
-    const next = current === 'dark' ? 'light' : 'dark';
+    const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
     setTheme(next);
     localStorage.setItem('quran_theme', next);
 }
 
 // -------------------------------------------------------
-// Language management
+// Language
 // -------------------------------------------------------
 function applyLanguage() {
-    // Update toggle button label
     langToggle.textContent = currentLang === 'bn' ? 'EN' : 'বাং';
-    langToggle.setAttribute('title', currentLang === 'bn' ? 'Switch to English' : 'বাংলায় পরিবর্তন করুন');
+    langToggle.title       = currentLang === 'bn' ? 'Switch to English' : 'বাংলায় পরিবর্তন';
 
-    // Update search placeholder
-    searchInput.placeholder = currentLang === 'bn'
-        ? 'সূরার নাম বা নম্বর দিয়ে খুঁজুন...'
-        : 'Search by name or number...';
-
-    // Update all data-bn / data-en elements on the page
+    // Swap all [data-bn] / [data-en] elements
     document.querySelectorAll('[data-bn]').forEach(el => {
         el.textContent = currentLang === 'bn'
             ? el.getAttribute('data-bn')
             : el.getAttribute('data-en');
     });
 
-    // Re-render cards if data is already loaded (to swap name display)
-    if (filteredSurahs.length > 0) {
-        renderCards(filteredSurahs);
-    }
-}
+    // Update search placeholder
+    searchInput.placeholder = currentLang === 'bn'
+        ? 'সূরার নাম বা নম্বর লিখুন...'
+        : 'Search by name or number...';
 
+    if (filteredSurahs.length > 0) renderCards(filteredSurahs);
+}
 function toggleLanguage() {
     currentLang = currentLang === 'bn' ? 'en' : 'bn';
     localStorage.setItem('quran_lang', currentLang);
@@ -123,16 +105,37 @@ function toggleLanguage() {
 }
 
 // -------------------------------------------------------
-// Loading skeleton — shown while API call is in flight
+// Tab switching
 // -------------------------------------------------------
-function renderSkeletons(count) {
-    loadingState.innerHTML = Array.from({ length: count }, () => `
+function switchTab(which) {
+    const isSurah = which === 'surah';
+    tabSurah.classList.toggle('active', isSurah);
+    tabTopic.classList.toggle('active', !isSurah);
+    tabSurah.setAttribute('aria-selected', isSurah);
+    tabTopic.setAttribute('aria-selected', !isSurah);
+    panelSurah.classList.toggle('hidden', !isSurah);
+    panelTopic.classList.toggle('hidden', isSurah);
+}
+
+// -------------------------------------------------------
+// Skeleton (shown while API loads)
+// -------------------------------------------------------
+function renderSkeletons(n) {
+    loadingState.innerHTML = Array.from({ length: n }, () => `
         <div class="skeleton-card">
-            <div class="skeleton skeleton-circle"></div>
-            <div class="skeleton-body">
-                <div class="skeleton skeleton-line skeleton-line-lg skeleton-line-w70"></div>
-                <div class="skeleton skeleton-line skeleton-line-w50"></div>
-                <div class="skeleton skeleton-line skeleton-line-w40"></div>
+            <div class="surah-num-wrap">
+                <div class="skeleton sk-diamond"></div>
+            </div>
+            <div class="surah-card-body">
+                <div class="sk-body">
+                    <div class="skeleton sk-line" style="width:70%;height:14px"></div>
+                    <div class="skeleton sk-line" style="width:50%;height:11px;margin-top:4px"></div>
+                    <div class="skeleton sk-line" style="width:38%;height:10px;margin-top:6px;border-radius:999px"></div>
+                </div>
+                <div class="sk-body" style="align-items:flex-end">
+                    <div class="skeleton sk-line" style="width:80px;height:22px"></div>
+                    <div class="skeleton sk-line" style="width:50px;height:10px;margin-top:4px"></div>
+                </div>
             </div>
         </div>
     `).join('');
@@ -144,15 +147,13 @@ function renderSkeletons(count) {
 }
 
 // -------------------------------------------------------
-// Fetch surah list from API (via api.js)
+// Fetch surahs
 // -------------------------------------------------------
 async function loadSurahs() {
     renderSkeletons(12);
-
     try {
-        allSurahs = await getAllSurahs();   // defined in api.js
+        allSurahs      = await getAllSurahs();   // api.js
         filteredSurahs = allSurahs;
-
         loadingState.classList.add('hidden');
         renderCards(allSurahs);
     } catch (err) {
@@ -162,7 +163,7 @@ async function loadSurahs() {
 }
 
 // -------------------------------------------------------
-// Render surah cards into the grid
+// Render cards with new layout
 // -------------------------------------------------------
 function renderCards(surahs) {
     if (surahs.length === 0) {
@@ -170,35 +171,52 @@ function renderCards(surahs) {
         noResults.classList.remove('hidden');
         return;
     }
-
     noResults.classList.add('hidden');
 
-    // Decide which name gets prominence based on current language
     surahGrid.innerHTML = surahs.map(s => {
-        const revType = s.revelationType;                       // 'Meccan' | 'Medinan'
-        const tagClass = revType === 'Meccan' ? 'tag-mekki' : 'tag-madani';
-        const tagLabel = currentLang === 'bn'
-            ? (revType === 'Meccan' ? 'মক্কী' : 'মাদানী')
-            : revType;
+        const isMekki   = s.revelationType === 'Meccan';
+        const tagClass  = isMekki ? 'tag-mekki' : 'tag-madani';
+        const tagLabel  = currentLang === 'bn'
+            ? (isMekki ? '🕌 মক্কী' : '🕌 মাদানী')
+            : (isMekki ? '🕌 Meccan' : '🕌 Medinan');
 
-        const primaryName   = currentLang === 'bn' ? s.bengaliName    : s.englishName;
-        const secondaryName = currentLang === 'bn' ? s.englishName    : s.bengaliName;
-        const ayahLabel     = currentLang === 'bn'
-            ? `${s.numberOfAyahs} আয়াত`
+        // getBengaliMeaning & toBengaliNumber come from api.js
+        const meaning   = getBengaliMeaning(s.number);
+        const bnNum     = toBengaliNumber(s.number);
+        const bnAyahs   = currentLang === 'bn'
+            ? `${toBengaliNumber(s.numberOfAyahs)} আয়াত`
             : `${s.numberOfAyahs} ayahs`;
 
+        const primaryName   = currentLang === 'bn' ? s.bengaliName : s.englishName;
+        const secondaryName = currentLang === 'bn' ? meaning       : s.englishNameTranslation;
+
         return `
-            <a class="surah-card" href="surah.html?id=${s.number}" aria-label="সূরা ${s.number}: ${s.englishName}">
-                <div class="surah-number">${s.number}</div>
-                <div class="surah-info">
-                    <div class="surah-arabic-name">${s.name}</div>
-                    <div class="surah-names">
-                        <span class="surah-bn-name">${primaryName}</span>
-                        <span class="surah-en-name">${secondaryName}</span>
+            <a class="surah-card"
+               href="surah.html?id=${s.number}"
+               aria-label="সূরা ${s.number}: ${s.englishName}">
+
+                <!-- Diamond number badge -->
+                <div class="surah-num-wrap" aria-hidden="true">
+                    <div class="surah-num-diamond">
+                        <span>${bnNum}</span>
                     </div>
-                    <div class="surah-meta">
-                        <span class="ayah-count">${ayahLabel}</span>
-                        <span class="tag ${tagClass}">${tagLabel}</span>
+                </div>
+
+                <!-- Card body -->
+                <div class="surah-card-body">
+                    <!-- Left: Bengali name + meaning + tag -->
+                    <div class="surah-card-left">
+                        <div class="surah-bn-name">${primaryName}</div>
+                        <div class="surah-meaning">${secondaryName}</div>
+                        <div class="surah-meta-row">
+                            <span class="tag ${tagClass}">${tagLabel}</span>
+                        </div>
+                    </div>
+
+                    <!-- Right: Arabic + ayah count -->
+                    <div class="surah-card-right">
+                        <div class="surah-arabic-name">${s.name}</div>
+                        <div class="surah-ayah-count">${bnAyahs}</div>
                     </div>
                 </div>
             </a>
@@ -209,42 +227,36 @@ function renderCards(surahs) {
 }
 
 // -------------------------------------------------------
-// Search / filter
+// Search
 // -------------------------------------------------------
 function onSearchInput() {
-    const query = searchInput.value.trim();
-
-    // Show / hide clear button
-    searchClear.classList.toggle('hidden', query === '');
-
-    // Debounce: wait 200ms after user stops typing before filtering
-    clearTimeout(searchDebounceTimer);
-    searchDebounceTimer = setTimeout(() => filterSurahs(query), 200);
+    const q = searchInput.value.trim();
+    searchClear.classList.toggle('hidden', q === '');
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => filterSurahs(q), 220);
 }
 
 function filterSurahs(query) {
     if (!query) {
         filteredSurahs = allSurahs;
         searchCount.classList.add('hidden');
-        renderCards(filteredSurahs);
+        renderCards(allSurahs);
         return;
     }
-
     const q = query.toLowerCase();
-    // Search by number, English name, English translation, Bengali name, Arabic name
     filteredSurahs = allSurahs.filter(s =>
-        String(s.number).includes(q) ||
-        s.englishName.toLowerCase().includes(q) ||
-        s.englishNameTranslation.toLowerCase().includes(q) ||
-        s.bengaliName.includes(query) ||   // Bengali — case doesn't apply
-        s.name.includes(query)             // Arabic
+        String(s.number).includes(q)                          ||
+        s.englishName.toLowerCase().includes(q)               ||
+        s.englishNameTranslation.toLowerCase().includes(q)    ||
+        s.bengaliName.includes(query)                         ||
+        getBengaliMeaning(s.number).includes(query)           ||
+        s.name.includes(query)
     );
 
-    // Show result count
-    const countLabel = currentLang === 'bn'
-        ? `${filteredSurahs.length}টি সূরা পাওয়া গেছে`
+    const label = currentLang === 'bn'
+        ? `${toBengaliNumber(filteredSurahs.length)}টি সূরা পাওয়া গেছে`
         : `${filteredSurahs.length} surah(s) found`;
-    searchCount.textContent = countLabel;
+    searchCount.textContent = label;
     searchCount.classList.remove('hidden');
 
     renderCards(filteredSurahs);
@@ -255,15 +267,15 @@ function clearSearch() {
     searchClear.classList.add('hidden');
     searchCount.classList.add('hidden');
     filteredSurahs = allSurahs;
-    renderCards(filteredSurahs);
+    renderCards(allSurahs);
     searchInput.focus();
 }
 
 // -------------------------------------------------------
-// Error display
+// Error
 // -------------------------------------------------------
 function showError(message) {
-    errorMsg.textContent = message || 'ইন্টারনেট সংযোগ পরীক্ষা করুন এবং আবার চেষ্টা করুন।';
+    errorMsg.textContent = message || 'ইন্টারনেট সংযোগ পরীক্ষা করুন।';
     errorState.classList.remove('hidden');
     surahGrid.classList.add('hidden');
 }
