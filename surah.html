@@ -12,7 +12,7 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Inter:wght@400;500;600;700&family=Noto+Sans+Bengali:wght@400;500;600&family=Scheherazade+New:wght@400;700&family=Noto+Naskh+Arabic:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Aref+Ruqaa:wght@400;700&family=El+Messiri:wght@400;700&family=Inter:wght@400;500;600;700&family=Lateef:wght@300;400;700&family=Markazi+Text:wght@400;500;700&family=Noto+Naskh+Arabic:wght@400;700&family=Noto+Sans+Bengali:wght@400;500;600&family=Scheherazade+New:wght@400;700&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="css/style.css">
 </head>
@@ -80,10 +80,20 @@
         <div class="settings-section">
             <label class="settings-label" for="arabic-font-select">আরবি ফন্ট</label>
             <select class="settings-select" id="arabic-font-select">
-                <option value="Amiri">Amiri (ক্লাসিক)</option>
-                <option value="Scheherazade New">Scheherazade New (ঐতিহ্যবাহী)</option>
-                <option value="Noto Naskh Arabic">Noto Naskh Arabic (আধুনিক)</option>
-                <option value="Noorehuda">Noorehuda (নূরে হুদা)</option>
+                <optgroup label="— কুরআন ফন্ট —">
+                    <option value="Scheherazade New">Scheherazade New</option>
+                    <option value="Amiri">Amiri</option>
+                    <option value="Noorehuda">Noorehuda (নূরে হুদা)</option>
+                    <option value="Lateef">Lateef (লতিফ)</option>
+                </optgroup>
+                <optgroup label="— নাসখ শৈলী —">
+                    <option value="Noto Naskh Arabic">Noto Naskh Arabic</option>
+                    <option value="Markazi Text">Markazi Text</option>
+                    <option value="El Messiri">El Messiri</option>
+                </optgroup>
+                <optgroup label="— অন্যান্য —">
+                    <option value="Aref Ruqaa">Aref Ruqaa (রুকআ)</option>
+                </optgroup>
             </select>
         </div>
 
