@@ -1207,3 +1207,326 @@ input  { font-family: inherit; }
     .arabic-text { font-size: 24pt; }
     body { color: black; background: white; }
 }
+
+/* ============================================================
+   21. SIDEBAR SEARCH & GOTO
+   ============================================================ */
+.sidebar-search-wrap {
+    position: relative;
+    padding: 0.45rem 0.5rem;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+    background: var(--bg-header);
+    transition: background var(--tr-slow), border-color var(--tr-slow);
+}
+.sidebar-search-icon {
+    position: absolute;
+    left: 0.85rem; top: 50%;
+    transform: translateY(-50%);
+    width: 12px; height: 12px;
+    color: var(--text-sm);
+    pointer-events: none;
+}
+.sidebar-search-input {
+    width: 100%;
+    height: 30px;
+    padding: 0 0.45rem 0 1.65rem;
+    border: 1.5px solid var(--border);
+    border-radius: var(--r-full);
+    background: var(--bg-page);
+    color: var(--text-h);
+    font-size: 0.77rem;
+    font-family: 'Noto Sans Bengali', sans-serif;
+    outline: none;
+    transition: border-color var(--tr), background var(--tr-slow);
+}
+.sidebar-search-input:focus { border-color: var(--accent); }
+.sidebar-search-input::placeholder { color: var(--text-sm); }
+
+/* Para list items */
+.para-item {
+    display: flex; align-items: center; gap: 0.45rem;
+    padding: 0.45rem 0.6rem;
+    border-bottom: 1px solid var(--border);
+    text-decoration: none; color: inherit;
+    font-family: 'Noto Sans Bengali', sans-serif;
+    cursor: pointer;
+    transition: background var(--tr), color var(--tr);
+}
+.para-item:hover { background: var(--g50); color: var(--accent); text-decoration: none; }
+.para-num {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    font-size: 0.62rem; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    font-family: 'Noto Sans Bengali', sans-serif;
+}
+.para-name { font-size: 0.79rem; color: var(--text-b); }
+
+/* Goto input at sidebar bottom */
+.sidebar-goto {
+    flex-shrink: 0;
+    padding: 0.45rem 0.5rem;
+    border-top: 1px solid var(--border);
+    background: var(--bg-header);
+    transition: background var(--tr-slow), border-color var(--tr-slow);
+}
+.goto-label {
+    font-size: 0.65rem; font-weight: 700;
+    color: var(--text-sm); letter-spacing: 0.04em;
+    font-family: 'Noto Sans Bengali', sans-serif;
+    margin-bottom: 0.3rem;
+}
+.goto-inputs {
+    display: flex; align-items: center; gap: 0.25rem;
+}
+.goto-inputs input {
+    flex: 1;
+    height: 28px;
+    padding: 0 0.4rem;
+    border: 1.5px solid var(--border);
+    border-radius: var(--r-sm);
+    background: var(--bg-page);
+    color: var(--text-h);
+    font-size: 0.77rem;
+    font-family: 'Noto Sans Bengali', sans-serif;
+    outline: none;
+    min-width: 0;
+    transition: border-color var(--tr), background var(--tr-slow);
+}
+.goto-inputs input:focus { border-color: var(--accent); }
+.goto-inputs span {
+    font-weight: 700; color: var(--text-m); font-size: 0.8rem;
+    flex-shrink: 0;
+}
+.goto-inputs button {
+    height: 28px; padding: 0 0.6rem;
+    border-radius: var(--r-sm);
+    background: var(--accent); color: #fff;
+    border: none; font-size: 0.8rem; font-weight: 700;
+    cursor: pointer; flex-shrink: 0;
+    transition: opacity var(--tr);
+}
+.goto-inputs button:hover { opacity: 0.85; }
+
+/* ============================================================
+   22. MAIN CONTENT TABS (অনুবাদ | তিলাওয়াত)
+   ============================================================ */
+.main-tabs {
+    display: flex; gap: 0.2rem;
+    padding: 0.2rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    margin-bottom: 0.875rem;
+    transition: background var(--tr-slow), border-color var(--tr-slow);
+}
+.main-tab {
+    flex: 1;
+    padding: 0.42rem 0.75rem;
+    border-radius: calc(var(--r-md) - 2px);
+    font-size: 0.82rem; font-weight: 600;
+    color: var(--text-m);
+    font-family: 'Noto Sans Bengali', sans-serif;
+    background: none; border: none; cursor: pointer;
+    transition: background var(--tr), color var(--tr);
+}
+.main-tab.active { background: var(--accent); color: #fff; }
+.main-tab:hover:not(.active) { background: var(--g50); color: var(--accent); }
+
+/* ============================================================
+   23. SETTINGS BUTTON & PANEL
+   ============================================================ */
+.settings-btn {
+    width: 34px; height: 34px;
+    border-radius: var(--r-full);
+    border: 1.5px solid var(--border);
+    background: var(--bg-card);
+    color: var(--text-m);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.95rem; cursor: pointer; flex-shrink: 0;
+    transition: background var(--tr), border-color var(--tr), color var(--tr), transform 0.3s;
+}
+.settings-btn:hover  { background: var(--g50); border-color: var(--accent); color: var(--accent); }
+.settings-btn.active { background: var(--g50); border-color: var(--accent); color: var(--accent); transform: rotate(45deg); }
+
+.settings-panel {
+    position: fixed;
+    top: 60px; right: 0.75rem;
+    width: 272px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+    z-index: 350;
+    padding: 0.875rem;
+    transition: background var(--tr-slow), border-color var(--tr-slow);
+}
+.settings-header {
+    font-size: 0.875rem; font-weight: 700;
+    color: var(--text-h);
+    font-family: 'Noto Sans Bengali', sans-serif;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+    transition: color var(--tr-slow), border-color var(--tr-slow);
+}
+.settings-section { margin-bottom: 0.6rem; }
+.settings-label {
+    display: block;
+    font-size: 0.75rem; font-weight: 600;
+    color: var(--text-m);
+    font-family: 'Noto Sans Bengali', sans-serif;
+    margin-bottom: 0.25rem;
+}
+.settings-select {
+    width: 100%; height: 32px;
+    padding: 0 0.6rem;
+    border: 1.5px solid var(--border);
+    border-radius: var(--r-md);
+    background: var(--bg-page);
+    color: var(--text-h);
+    font-size: 0.8rem;
+    font-family: 'Noto Sans Bengali', sans-serif;
+    outline: none; cursor: pointer;
+    transition: border-color var(--tr), background var(--tr-slow), color var(--tr-slow);
+}
+.settings-select:focus { border-color: var(--accent); }
+
+/* Toggle switch row */
+.toggle-row {
+    display: flex; align-items: center;
+    justify-content: space-between;
+    padding: 0.25rem 0;
+}
+.toggle-label {
+    font-size: 0.8rem; color: var(--text-b);
+    font-family: 'Noto Sans Bengali', sans-serif;
+    transition: color var(--tr-slow);
+}
+.toggle-label.disabled { color: var(--text-sm); }
+.toggle-badge {
+    font-size: 0.58rem; padding: 0.08rem 0.35rem;
+    border-radius: var(--r-full);
+    background: var(--g100); color: var(--g700);
+    margin-left: 0.25rem;
+    font-family: 'Noto Sans Bengali', sans-serif;
+    vertical-align: middle;
+}
+.toggle-switch {
+    position: relative; width: 36px; height: 20px; flex-shrink: 0;
+}
+.toggle-switch input { opacity: 0; width: 0; height: 0; position: absolute; }
+.toggle-track {
+    position: absolute; inset: 0;
+    background: var(--border);
+    border-radius: var(--r-full); cursor: pointer;
+    transition: background var(--tr);
+}
+.toggle-switch input:checked + .toggle-track { background: var(--accent); }
+.toggle-track::after {
+    content: '';
+    position: absolute; left: 3px; top: 3px;
+    width: 14px; height: 14px;
+    border-radius: 50%; background: #fff;
+    transition: transform var(--tr);
+}
+.toggle-switch input:checked + .toggle-track::after { transform: translateX(16px); }
+.toggle-switch input:disabled + .toggle-track { opacity: 0.38; cursor: not-allowed; }
+
+/* ============================================================
+   24. FULL SURAH AUDIO BUTTON (inside sih-right)
+   ============================================================ */
+.sih-right {
+    display: flex; flex-direction: column;
+    align-items: flex-end; gap: 0.35rem;
+    flex-shrink: 0;
+}
+.full-audio-btn {
+    display: inline-flex; align-items: center; gap: 0.3rem;
+    padding: 0.38rem 0.875rem;
+    border-radius: var(--r-full);
+    background: rgba(255,255,255,0.18);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.32);
+    font-size: 0.77rem; font-weight: 600;
+    font-family: 'Noto Sans Bengali', sans-serif;
+    cursor: pointer; white-space: nowrap;
+    transition: background var(--tr);
+}
+.full-audio-btn:hover   { background: rgba(255,255,255,0.28); }
+.full-audio-btn.playing { background: rgba(255,255,255,0.32); border-color: rgba(255,255,255,0.6); }
+.full-audio-progress {
+    font-size: 0.67rem; color: rgba(255,255,255,0.68);
+    font-family: 'Noto Sans Bengali', sans-serif; text-align: right;
+}
+
+/* ============================================================
+   25. BENGALI TRANSLITERATION LAYER
+   ============================================================ */
+.ayah-transliteration {
+    display: none; /* Hidden by default; shown when .show-transliteration is on #ayah-list */
+    font-family: 'Noto Sans Bengali', sans-serif;
+    font-size: 0.86rem; color: var(--text-m);
+    font-style: italic; line-height: 1.75;
+    padding: 0.3rem 0 0.35rem;
+    border-bottom: 1px dashed var(--border);
+    margin-bottom: 0.35rem;
+    transition: color var(--tr-slow), border-color var(--tr-slow);
+}
+#ayah-list.show-transliteration .ayah-transliteration { display: block; }
+
+/* ============================================================
+   26. তিলাওয়াত PANEL (Mushaf continuous Arabic)
+   ============================================================ */
+.tilawat-container {
+    background: var(--g50);
+    border: 1px solid var(--g200);
+    border-radius: var(--r-lg);
+    padding: 1.5rem 1.25rem 1.75rem;
+    margin-bottom: 0.875rem;
+    transition: background var(--tr-slow), border-color var(--tr-slow);
+}
+.tilawat-heading {
+    font-size: 0.78rem; font-weight: 700;
+    color: var(--accent);
+    font-family: 'Noto Sans Bengali', sans-serif;
+    text-align: center;
+    margin-bottom: 1.25rem;
+    letter-spacing: 0.04em;
+}
+.tilawat-arabic {
+    font-family: 'Amiri', 'Scheherazade New', serif;
+    font-size: 1.7rem;
+    line-height: 3.2;
+    direction: rtl;
+    text-align: justify;
+    color: var(--text-h);
+    word-spacing: 0.12em;
+    transition: color var(--tr-slow), font-size var(--tr);
+}
+.ayah-end-mark {
+    display: inline;
+    color: var(--accent);
+    font-size: 1rem;
+    font-family: 'Amiri', serif;
+    font-style: normal;
+    margin: 0 0.2em;
+    opacity: 0.85;
+}
+
+/* ============================================================
+   27. SIDEBAR INNER FLEX LAYOUT FIX (with goto)
+   ============================================================ */
+.sidebar-inner {
+    display: flex; flex-direction: column; height: 100%;
+}
+
+@media (max-width: 480px) {
+    .settings-panel { right: 0.5rem; width: calc(100vw - 1rem); }
+    .main-tab { font-size: 0.76rem; padding: 0.38rem 0.5rem; }
+    .tilawat-arabic { font-size: 1.4rem; line-height: 2.9; }
+}

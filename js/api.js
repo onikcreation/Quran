@@ -204,3 +204,85 @@ function loadBookmark(surahId) {
 function clearBookmark(surahId) {
     localStorage.removeItem(`quran_bm_${surahId}`);
 }
+
+// -------------------------------------------------------
+// Extended edition fetchers
+// -------------------------------------------------------
+
+async function getSurahTransliteration(id) {
+    try {
+        return await apiFetch(`tr_${id}`, `${API_BASE}/surah/${id}/bn.transliteration`);
+    } catch {
+        return null; // Optional — gracefully skip if edition doesn't exist
+    }
+}
+
+async function getSurahPickthall(id) {
+    try {
+        return await apiFetch(`pk_${id}`, `${API_BASE}/surah/${id}/en.pickthall`);
+    } catch {
+        return null;
+    }
+}
+
+// Full parallel fetch: Arabic + Bengali + English(sahih) + English(pickthall) + Transliteration
+async function getSurahAllDataFull(id) {
+    const [arabic, bengali, englishSahih, englishPickthall, transliteration] =
+        await Promise.allSettled([
+            getSurahArabic(id),
+            getSurahBengali(id),
+            getSurahEnglish(id),
+            getSurahPickthall(id),
+            getSurahTransliteration(id),
+        ]);
+
+    if (arabic.status === 'rejected') {
+        throw new Error('সূরা লোড করা যায়নি: ' + arabic.reason.message);
+    }
+
+    return {
+        arabic:           arabic.value,
+        bengali:          bengali.status === 'fulfilled'          ? bengali.value          : null,
+        englishSahih:     englishSahih.status === 'fulfilled'     ? englishSahih.value     : null,
+        englishPickthall: englishPickthall.status === 'fulfilled' ? englishPickthall.value : null,
+        transliteration:  transliteration.status === 'fulfilled'  ? transliteration.value  : null,
+    };
+}
+
+// -------------------------------------------------------
+// 30 Para (Juz) static data
+// -------------------------------------------------------
+const PARA_DATA = [
+    { num: 1,  name: 'আলিফ লাম মীম',            surah: 1,  ayah: 1   },
+    { num: 2,  name: 'সায়াকুল',                 surah: 2,  ayah: 142 },
+    { num: 3,  name: 'তিলকার রুসুল',             surah: 2,  ayah: 253 },
+    { num: 4,  name: 'লান তানালু',               surah: 3,  ayah: 93  },
+    { num: 5,  name: 'ওয়াল মুহসানাত',            surah: 4,  ayah: 24  },
+    { num: 6,  name: 'লা ইউহিব্বুল্লাহ',          surah: 4,  ayah: 148 },
+    { num: 7,  name: 'ওয়া ইযা সামিউ',            surah: 5,  ayah: 82  },
+    { num: 8,  name: 'ওয়া লাও আন্নানা',           surah: 6,  ayah: 111 },
+    { num: 9,  name: 'ক্বালাল মালাউ',             surah: 7,  ayah: 88  },
+    { num: 10, name: 'ওয়া\'লামু',               surah: 8,  ayah: 41  },
+    { num: 11, name: 'ইয়া\'তাযিরুন',             surah: 9,  ayah: 93  },
+    { num: 12, name: 'ওয়ামা মিন দাব্বা',          surah: 11, ayah: 6   },
+    { num: 13, name: 'ওয়ামা উবাররিউ',            surah: 12, ayah: 53  },
+    { num: 14, name: 'রুবামা',                   surah: 15, ayah: 1   },
+    { num: 15, name: 'সুবহানাল্লাযি',             surah: 17, ayah: 1   },
+    { num: 16, name: 'ক্বালা আলাম',              surah: 18, ayah: 75  },
+    { num: 17, name: 'ইকতারাবা',                surah: 21, ayah: 1   },
+    { num: 18, name: 'ক্বাদ আফলাহা',             surah: 23, ayah: 1   },
+    { num: 19, name: 'ওয়া ক্বালাল্লাযিনা',        surah: 25, ayah: 21  },
+    { num: 20, name: 'আম্মান খালাক্বা',            surah: 27, ayah: 56  },
+    { num: 21, name: 'উতলু মা উহিয়া',            surah: 29, ayah: 46  },
+    { num: 22, name: 'ওয়ামাইয়াকনুত',            surah: 33, ayah: 31  },
+    { num: 23, name: 'ওয়ামা লি',                surah: 36, ayah: 28  },
+    { num: 24, name: 'ফামান আযলামু',             surah: 39, ayah: 32  },
+    { num: 25, name: 'ইলাইহি ইউরাদ্দু',           surah: 41, ayah: 47  },
+    { num: 26, name: 'হা-মীম',                  surah: 46, ayah: 1   },
+    { num: 27, name: 'ক্বালা ফামা খাতবুকুম',      surah: 51, ayah: 31  },
+    { num: 28, name: 'ক্বাদ সামিআল্লাহ',          surah: 58, ayah: 1   },
+    { num: 29, name: 'তাবারাকাল্লাযি',            surah: 67, ayah: 1   },
+    { num: 30, name: 'আম্মা',                   surah: 78, ayah: 1   },
+];
+
+function getParaList() { return PARA_DATA; }
