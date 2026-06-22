@@ -1,4 +1,4 @@
-// ============================================================
+﻿// ============================================================
 // surah-detail.js — v5.0
 // Sidebar dropdowns, audio player bar, tafsir toggle,
 // copy button, transliteration fix, Arabic font picker
@@ -181,30 +181,16 @@ function setTranslationLang(lang) {
 
 // -------------------------------------------------------
 // Bismillah stripping
-// AlQuran Cloud prepends Bismillah to ayah 1 for surahs 2-8 and 10-114.
-// The exact diacritics vary by API version so we normalise first.
+// AlQuran Cloud prepends "bsm allaah alrhmn alrhym" (4 words) to ayah 1
+// of surahs 2-8 and 10-114. Split on whitespace and skip those 4 words.
 // -------------------------------------------------------
 function stripLeadingBismillah(text) {
-    // Normalize: drop tashkeel + convert alef variants to plain alef
-    const norm = s => s
-        .replace(/[ؐ-ًؚ-ٰٟۖ-ۭ]/g, '') // diacritics
-        .replace(/[ٱآأإ]/g, 'ا');                 // alef variants
-
-    const normalised = norm(text);
-    // Base consonantal Bismillah
-    const bisRx = /^بسم\s*الله\s*الرحمن\s*الرحيم\s*/;
-    const m = normalised.match(bisRx);
-    if (!m) return text;
-
-    // Walk original string counting normalised characters until we reach m[0].length
-    const targetNormLen = m[0].length;
-    let origPos = 0, normCount = 0;
-    while (origPos < text.length && normCount < targetNormLen) {
-        const normCh = norm(text[origPos]);
-        normCount += normCh.length;
-        origPos++;
-    }
-    return text.slice(origPos).trim();
+    var words = text.trim().split(/\s+/);
+    if (words.length <= 4) return text;
+    // Remove diacritics from first word and verify it starts with Arabic ba (U+0628)
+    var firstBase = words[0].replace(/[ؐ-ؚـً-ٰٟۖ-ۭ]/g, '');
+    if (firstBase.charCodeAt(0) !== 0x0628) return text; // U+0628 = ba
+    return words.slice(4).join(' ');
 }
 
 // -------------------------------------------------------
