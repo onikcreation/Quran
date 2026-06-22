@@ -193,6 +193,16 @@ function stripLeadingBismillah(text) {
     return words.slice(4).join(' ');
 }
 
+
+// -------------------------------------------------------
+// Strip Uthmanic-only marks for standard Arabic display
+// -------------------------------------------------------
+function normalizeArabicDisplay(text) {
+    return text
+        .replace(/ـٰ/g, '')   // tatweel + dagger alef -> remove
+        .replace(/ٰ/g, '')          // standalone dagger alef -> remove
+        .replace(/ٱ/g, 'ا');   // alef wasla -> regular alef
+}
 // -------------------------------------------------------
 // Arabic font
 // -------------------------------------------------------
@@ -450,7 +460,7 @@ function renderAyahs() {
 
         // Strip Bismillah prepended by API to first ayah (all surahs except 1 and 9)
         const arabicText = (ayah.numberInSurah === 1 && currentSurahId !== 1 && currentSurahId !== 9)
-            ? stripLeadingBismillah(ayah.text) : ayah.text;
+            ? normalizeArabicDisplay(stripLeadingBismillah(ayah.text)) : normalizeArabicDisplay(ayah.text);
 
         const hasTafsir = Boolean(tafsirTxt);
 
@@ -579,7 +589,7 @@ function renderTilawatPanel() {
         : '';
     const stripBis = currentSurahId !== 1 && currentSurahId !== 9;
     const ayahsHtml = arAyahs.map(ayah => {
-        const txt = (ayah.numberInSurah === 1 && stripBis) ? stripLeadingBismillah(ayah.text) : ayah.text;
+        const txt = normalizeArabicDisplay((ayah.numberInSurah === 1 && stripBis) ? stripLeadingBismillah(ayah.text) : ayah.text);
         return `${txt}<span class="ayah-end-mark" title="আয়াত ${ayah.numberInSurah}"> ۝${toArabicNumeral(ayah.numberInSurah)} </span>`;
     }).join(' ');
     panel.innerHTML = `
