@@ -683,28 +683,103 @@ input  { font-family: inherit; }
     padding: 0.2rem 0.6rem;
 }
 
-/* Two-column page layout */
+/* Full-width page layout (no sidebar) */
 .surah-page { display: flex; flex-direction: column; min-height: 100vh; }
 
-.page-layout {
-    display: flex;
-    flex: 1;
-    overflow: hidden;
-    height: calc(100vh - 57px);
+/* Main reading area — full width, centered */
+.surah-main {
+    max-width: 900px;
+    margin: 0 auto;
+    width: 100%;
+    padding: 1.25rem 1.25rem 2.5rem;
 }
 
-/* SIDEBAR */
-.sidebar {
-    width: 255px;
-    min-width: 255px;
-    border-right: 1.5px solid var(--border);
+/* ============================================================
+   SURAH NAV BAR  (secondary sticky bar below header)
+   ============================================================ */
+.surah-nav-bar {
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 57px;
+    z-index: 90;
+    box-shadow: var(--shadow-sm);
+    transition: background var(--tr-slow), border-color var(--tr-slow);
+}
+.snb-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0.5rem 1.25rem;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+}
+.snb-selects {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.5rem;
+    flex: 1;
+    min-width: 0;
+}
+.snb-select-group {
     display: flex;
     flex-direction: column;
-    background: var(--bg-card);
-    transition: background var(--tr-slow), border-color var(--tr-slow);
-    overflow: hidden;
-    flex-shrink: 0;
+    gap: 0.18rem;
+    min-width: 0;
+    flex: 1;
 }
+.snb-label {
+    font-size: 0.6rem;
+    font-weight: 700;
+    color: var(--text-sm);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-family: 'Noto Sans Bengali', sans-serif;
+}
+.snb-select {
+    height: 34px;
+    padding: 0 0.45rem;
+    border: 1.5px solid var(--border);
+    border-radius: var(--r-md);
+    background: var(--bg-page);
+    color: var(--text-h);
+    font-size: 0.78rem;
+    font-family: 'Noto Sans Bengali', sans-serif;
+    outline: none;
+    cursor: pointer;
+    width: 100%;
+    appearance: auto;
+    transition: border-color var(--tr), background var(--tr-slow), color var(--tr-slow);
+}
+.snb-select:focus { border-color: var(--accent); }
+.snb-tabs {
+    display: flex;
+    gap: 0.2rem;
+    background: var(--bg-page);
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    padding: 0.2rem;
+    flex-shrink: 0;
+    transition: background var(--tr-slow), border-color var(--tr-slow);
+}
+.snb-tab {
+    padding: 0.35rem 0.8rem;
+    border-radius: calc(var(--r-md) - 2px);
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-m);
+    font-family: 'Noto Sans Bengali', sans-serif;
+    background: none;
+    border: none;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background var(--tr), color var(--tr);
+}
+.snb-tab.active { background: var(--accent); color: #fff; }
+.snb-tab:hover:not(.active) { background: var(--g50); color: var(--accent); }
+
+/* Legacy: keep .sidebar styles for code that may reference them */
 .sidebar-inner { display: flex; flex-direction: column; height: 100%; }
 
 .sidebar-tabs {
@@ -812,12 +887,7 @@ input  { font-family: inherit; }
 }
 .sidebar-overlay.show { display: block; }
 
-/* Main reading area */
-.surah-main {
-    flex: 1; overflow-y: auto;
-    padding: 1.1rem 1.25rem 2.5rem;
-    min-width: 0;
-}
+/* .surah-main defined above in new layout section */
 
 /* ============================================================
    13. BOOKMARK BANNER
@@ -932,48 +1002,64 @@ input  { font-family: inherit; }
     margin-top: 0.2rem;
 }
 
-/* ---- Ayah card ---- */
+/* ---- Ayah card (Modern Card Style) ---- */
 .ayah-card {
     background: var(--bg-card);
     border: 1px solid var(--border);
-    border-radius: var(--r-md);
-    padding: 1rem 1.1rem 0.875rem;
-    margin-bottom: 0.65rem;
+    border-radius: var(--r-lg);
+    padding: 1.1rem 1.25rem 1rem;
+    margin-bottom: 0.875rem;
     transition: background var(--tr-slow), border-color var(--tr), box-shadow var(--tr);
-    scroll-margin-top: 72px;
+    scroll-margin-top: 120px;
+    box-shadow: var(--shadow-card);
 }
-.ayah-card:hover  { box-shadow: var(--shadow-sm); }
+.ayah-card:hover  { box-shadow: var(--shadow-card-hover); }
 .ayah-card.playing {
     border-color: var(--accent);
-    box-shadow: 0 0 0 2px rgba(22,163,74,0.15);
+    box-shadow: 0 0 0 2px rgba(22,163,74,0.18);
 }
 
-/* Ayah top: number circle + Arabic */
-.ayah-top {
-    display: flex; align-items: flex-start;
-    gap: 0.65rem; margin-bottom: 0.65rem;
+/* Card header: ayah number badge at top-left */
+.ayah-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.875rem;
 }
-.ayah-num-circle {
-    width: 31px; height: 31px;
+.ayah-num-badge {
+    width: 36px; height: 36px;
     border-radius: 50%;
-    background: var(--g50); border: 1.5px solid var(--g200);
-    color: var(--g800);
-    font-size: 0.72rem; font-weight: 700;
+    background: var(--accent);
+    color: #fff;
+    font-size: 0.8rem; font-weight: 700;
     display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
     font-family: 'Noto Sans Bengali', sans-serif;
-    transition: background var(--tr-slow);
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(22,163,74,0.3);
 }
-[data-theme="dark"] .ayah-num-circle {
-    background: var(--g100); color: #F0FDF4; border-color: var(--g200);
+[data-theme="dark"] .ayah-num-badge {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
 }
 
+/* Arabic text: full width, centered */
 .ayah-arabic {
     font-family: var(--arabic-font-family);
     font-size: var(--arabic-size);
-    line-height: 2.1; direction: rtl; text-align: right;
-    color: var(--text-h); flex: 1; word-spacing: 0.08em;
+    line-height: 2.2;
+    direction: rtl;
+    text-align: center;
+    color: var(--text-h);
+    word-spacing: 0.1em;
+    padding: 0.25rem 0 0.5rem;
     transition: font-size var(--tr), color var(--tr-slow);
+}
+
+/* Divider between Arabic/transliteration and translation */
+.ayah-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 0.75rem 0;
+    transition: background var(--tr-slow);
 }
 
 /* Bengali translation text */
@@ -1164,37 +1250,29 @@ input  { font-family: inherit; }
    18. RESPONSIVE
    ============================================================ */
 
-/* Desktop: hide hamburger */
-@media (min-width: 769px) {
-    #sidebar-toggle { display: none; }
-    .sidebar-overlay { display: none !important; }
+/* Tablet: compact nav bar */
+@media (max-width: 768px) {
+    .surah-main { padding: 0.875rem 1rem 2.5rem; }
+    .snb-inner  { padding: 0.45rem 1rem; gap: 0.6rem; }
+    .snb-select { font-size: 0.74rem; height: 30px; }
+    .snb-tab    { font-size: 0.75rem; padding: 0.3rem 0.6rem; }
 }
 
-/* Mobile: sidebar slides in */
-@media (max-width: 768px) {
-    .page-layout { height: auto; overflow: visible; }
-    .surah-main  { overflow-y: visible; padding: 0.875rem 1rem 2.5rem; }
-
-    .sidebar {
-        position: fixed;
-        left: -260px;
-        top: 57px;
-        height: calc(100vh - 57px);
-        z-index: 200;
-        transition: left var(--tr-slow), background var(--tr-slow);
-        box-shadow: 4px 0 24px rgba(0,0,0,0.18);
+/* Mobile: stack selects above tabs */
+@media (max-width: 540px) {
+    .snb-inner {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.4rem;
+        padding: 0.4rem 0.875rem;
     }
-    .sidebar.open { left: 0; }
-
-    .sidebar-overlay {
-        position: fixed; inset: 0;
-        background: rgba(0,0,0,0.52);
-        z-index: 199;
-        opacity: 0; pointer-events: none;
-        transition: opacity var(--tr-slow);
-        display: block;
+    .snb-selects {
+        gap: 0.35rem;
     }
-    .sidebar-overlay.show { opacity: 1; pointer-events: auto; }
+    .snb-tabs {
+        align-self: center;
+    }
+    .ayah-card { padding: 1rem 1rem 0.875rem; }
 }
 
 @media (max-width: 480px) {
@@ -1204,7 +1282,6 @@ input  { font-family: inherit; }
     .hero-title      { font-size: 1.5rem; }
     .main-content    { padding-left: 1rem; padding-right: 1rem; }
     .tab-btn         { padding: 0.8rem 1rem; font-size: 0.875rem; }
-    .ayah-card       { padding: 0.875rem 0.875rem 0.75rem; }
 }
 
 /* ============================================================

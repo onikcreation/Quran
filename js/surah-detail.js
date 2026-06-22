@@ -114,15 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('prev-surah').addEventListener('click', () => navigate(-1));
     document.getElementById('next-surah').addEventListener('click', () => navigate(1));
 
-    // Sidebar toggle (mobile)
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('sidebar-overlay');
-    document.getElementById('sidebar-toggle').addEventListener('click', () => {
-        sidebar.classList.toggle('open');
-        overlay.classList.toggle('show');
-        overlay.setAttribute('aria-hidden', sidebar.classList.contains('open') ? 'false' : 'true');
-    });
-    overlay.addEventListener('click', closeSidebar);
+    // Sidebar removed — navigation is in the top nav bar
 
     // Sidebar dropdowns
     document.getElementById('sd-surah').addEventListener('change', onSurahDropChange);
@@ -315,13 +307,7 @@ function updateNavButtons() {
 // -------------------------------------------------------
 // Sidebar
 // -------------------------------------------------------
-function closeSidebar() {
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('sidebar-overlay');
-    sidebar?.classList.remove('open');
-    overlay?.classList.remove('show');
-    overlay?.setAttribute('aria-hidden', 'true');
-}
+function closeSidebar() { /* sidebar removed in redesign */ }
 
 async function loadSurahsForDropdown() {
     try {
@@ -382,7 +368,6 @@ function jumpToAyah(n) {
     document.getElementById(`ayah-${n}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     const sel = document.getElementById('sd-ayah');
     if (sel) sel.value = String(n);
-    closeSidebar();
 }
 
 // -------------------------------------------------------
@@ -499,12 +484,15 @@ function renderAyahs() {
         <div class="ayah-card" id="ayah-${ayah.numberInSurah}"
              data-ayah="${ayah.numberInSurah}" data-global="${ayah.number}">
 
-            <div class="ayah-top">
-                <div class="ayah-num-circle" aria-label="আয়াত ${ayah.numberInSurah}">${bnNum}</div>
-                <div class="ayah-arabic" lang="ar">${arabicText}</div>
+            <div class="ayah-card-header">
+                <div class="ayah-num-badge" aria-label="আয়াত ${ayah.numberInSurah}">${bnNum}</div>
             </div>
 
+            <div class="ayah-arabic" lang="ar">${arabicText}</div>
+
             ${trText ? `<div class="ayah-transliteration">${escapeHtml(trText)}</div>` : ''}
+
+            <div class="ayah-divider"></div>
 
             ${(bnText || enText) ? `
             <div class="ayah-trans-row">
@@ -551,8 +539,6 @@ function renderAyahs() {
                         <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
                     </svg>
                 </button>
-
-                <div class="ayah-num-badge-action" aria-hidden="true">${bnNum}</div>
 
                 <button type="button" class="ayah-action-btn bookmark-ayah-btn"
                         data-ayah="${ayah.numberInSurah}" title="বুকমার্ক করুন">
