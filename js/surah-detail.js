@@ -575,7 +575,7 @@ function renderTilawatPanel() {
     const arAyahs   = surahData.arabic.ayahs;
     const surahName = getBengaliName(currentSurahId) || surahData.arabic.englishName;
     const bismillah = (currentSurahId !== 1 && currentSurahId !== 9)
-        ? `<div class="bismillah-arabic" style="text-align:center;margin-bottom:1.1rem">بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ</div>`
+        ? `<div class="bismillah-arabic" style="text-align:center;margin-bottom:1.1rem">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>`
         : '';
     const stripBis = currentSurahId !== 1 && currentSurahId !== 9;
     const ayahsHtml = arAyahs.map(ayah => {
