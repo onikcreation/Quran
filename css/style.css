@@ -83,6 +83,7 @@
     --arabic-lg: 38px;
     --arabic-size: var(--arabic-md);
     --arabic-font-family: 'Amiri Quran', 'Scheherazade New', serif;
+    --trans-size: 15px;
 }
 
 /* Dark theme */
@@ -1072,7 +1073,7 @@ input  { font-family: inherit; }
 [data-theme="dark"] .tafsir-heading { color: #D4A017; }
 .tafsir-text {
     font-family: 'Noto Sans Bengali', 'Inter', sans-serif;
-    font-size: 0.875rem; line-height: 1.85;
+    font-size: var(--trans-size); line-height: 1.85;
     color: var(--text-b); font-style: italic;
 }
 
@@ -1741,7 +1742,7 @@ body:not(.trans-lang-en) .trans-lang-en-text { display: none; }
 .ayah-trans-texts { flex: 1; min-width: 0; }
 .ayah-trans-text {
     margin: 0;
-    font-size: 0.88rem;
+    font-size: var(--trans-size);
     line-height: 1.7;
     color: var(--text-b);
     transition: color var(--tr-slow);

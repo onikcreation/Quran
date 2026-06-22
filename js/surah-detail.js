@@ -40,7 +40,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const jumpAyah = parseInt(params.get('ayah'), 10) || null;
 
     currentLang    = localStorage.getItem('quran_lang')      || 'bn';
-    arabicFontSize = parseInt(localStorage.getItem('quran_font_size'), 10) || 30;
+    arabicFontSize  = parseInt(localStorage.getItem('quran_font_size'), 10)    || 30;
+    bengaliFontSize = parseInt(localStorage.getItem('quran_bn_font_size'), 10) || 15;
     loadSettings();
 
     audioElement = document.getElementById('quran-audio');
@@ -56,12 +57,15 @@ document.addEventListener('DOMContentLoaded', () => {
     updateNavButtons();
     applySettingsUI();
     applyArabicFont();
+    applyBnFontSize();
 
     // Header controls
     document.getElementById('lang-toggle').addEventListener('click', toggleLanguage);
     document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
     document.getElementById('font-decrease').addEventListener('click', () => changeFontSize(-1));
     document.getElementById('font-increase').addEventListener('click', () => changeFontSize(1));
+    document.getElementById('bn-font-decrease').addEventListener('click', () => changeBnFontSize(-1));
+    document.getElementById('bn-font-increase').addEventListener('click', () => changeBnFontSize(1));
 
     // Settings panel
     document.getElementById('settings-btn').addEventListener('click', toggleSettingsPanel);
@@ -270,6 +274,28 @@ function changeFontSize(dir) {
     arabicFontSize = next;
     localStorage.setItem('quran_font_size', arabicFontSize);
     applyFontSize();
+}
+
+const BENGALI_FONT_SIZES = [13, 14, 15, 16, 17, 18, 20];
+function applyBnFontSize() {
+    document.documentElement.style.setProperty('--trans-size', bengaliFontSize + 'px');
+    const display = document.getElementById('bn-font-size-display');
+    if (display) display.textContent = bengaliFontSize + 'px';
+    const minSize = BENGALI_FONT_SIZES[0];
+    const maxSize = BENGALI_FONT_SIZES[BENGALI_FONT_SIZES.length - 1];
+    const decBtn = document.getElementById('bn-font-decrease');
+    const incBtn = document.getElementById('bn-font-increase');
+    if (decBtn) decBtn.disabled = bengaliFontSize <= minSize;
+    if (incBtn) incBtn.disabled = bengaliFontSize >= maxSize;
+}
+function changeBnFontSize(dir) {
+    const idx  = BENGALI_FONT_SIZES.indexOf(bengaliFontSize);
+    const cur  = idx === -1 ? 2 : idx;
+    const next = BENGALI_FONT_SIZES[Math.max(0, Math.min(BENGALI_FONT_SIZES.length - 1, cur + dir))];
+    if (next === bengaliFontSize) return;
+    bengaliFontSize = next;
+    localStorage.setItem('quran_bn_font_size', bengaliFontSize);
+    applyBnFontSize();
 }
 
 // -------------------------------------------------------
@@ -555,6 +581,7 @@ function renderAyahs() {
 
     list.classList.toggle('show-transliteration', settings.showTransliteration);
     applyFontSize();
+    applyBnFontSize();
 
     // Wire events (no .tlt-btn here — ltg-btn is handled globally via delegation)
     list.querySelectorAll('.tafsir-toggle-btn').forEach(btn =>
