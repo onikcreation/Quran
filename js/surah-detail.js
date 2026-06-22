@@ -12,7 +12,7 @@
 let currentSurahId  = 1;
 let surahData       = null;
 let currentLang     = 'bn';
-let arabicFontSize  = 'md';
+let arabicFontSize  = 30;
 let currentMainTab  = 'translation';
 
 let audioElement    = null;
@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const jumpAyah = parseInt(params.get('ayah'), 10) || null;
 
     currentLang    = localStorage.getItem('quran_lang')      || 'bn';
-    arabicFontSize = localStorage.getItem('quran_font_size') || 'md';
+    arabicFontSize = parseInt(localStorage.getItem('quran_font_size'), 10) || 30;
     loadSettings();
 
     audioElement = document.getElementById('quran-audio');
@@ -250,18 +250,22 @@ function toggleLanguage() {
 // -------------------------------------------------------
 // Arabic font size
 // -------------------------------------------------------
-const FONT_SIZES = ['sm', 'md', 'lg'];
+const FONT_SIZES = [22, 26, 30, 34, 38, 42, 48];
 function applyFontSize() {
-    const list = document.getElementById('ayah-list');
-    if (!list) return;
-    list.classList.remove('arabic-font-sm', 'arabic-font-md', 'arabic-font-lg');
-    if (arabicFontSize !== 'md') list.classList.add(`arabic-font-${arabicFontSize}`);
-    document.getElementById('font-decrease').disabled = arabicFontSize === 'sm';
-    document.getElementById('font-increase').disabled = arabicFontSize === 'lg';
+    document.documentElement.style.setProperty('--arabic-size', arabicFontSize + 'px');
+    const display = document.getElementById('font-size-display');
+    if (display) display.textContent = arabicFontSize + 'px';
+    const minSize = FONT_SIZES[0];
+    const maxSize = FONT_SIZES[FONT_SIZES.length - 1];
+    const decBtn = document.getElementById('font-decrease');
+    const incBtn = document.getElementById('font-increase');
+    if (decBtn) decBtn.disabled = arabicFontSize <= minSize;
+    if (incBtn) incBtn.disabled = arabicFontSize >= maxSize;
 }
 function changeFontSize(dir) {
     const idx  = FONT_SIZES.indexOf(arabicFontSize);
-    const next = FONT_SIZES[Math.max(0, Math.min(FONT_SIZES.length - 1, idx + dir))];
+    const cur  = idx === -1 ? 2 : idx;
+    const next = FONT_SIZES[Math.max(0, Math.min(FONT_SIZES.length - 1, cur + dir))];
     if (next === arabicFontSize) return;
     arabicFontSize = next;
     localStorage.setItem('quran_font_size', arabicFontSize);

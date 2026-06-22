@@ -1,4 +1,4 @@
-/* ============================================================
+﻿/* ============================================================
    style.css — v2.0
    পবিত্র কুরআন — Islamic Green Design
    ============================================================ */
@@ -657,23 +657,30 @@ input  { font-family: inherit; }
     display: flex; align-items: center; gap: 0.4rem; flex-shrink: 0;
 }
 
-/* Font controls (in header) */
-.font-controls {
-    display: flex;
+/* Font size control (in settings panel) */
+.font-size-row {
+    display: flex; align-items: center; gap: 0.5rem; margin-top: 0.25rem;
+}
+.fs-btn {
+    padding: 0.35rem 0.75rem;
+    font-size: 0.8rem; font-weight: 700;
+    color: var(--text-m);
     border: 1.5px solid var(--border);
     border-radius: var(--r-full);
-    overflow: hidden;
     background: var(--bg-card);
-    transition: border-color var(--tr-slow), background var(--tr-slow);
+    transition: background var(--tr), color var(--tr), border-color var(--tr-slow);
+    cursor: pointer;
 }
-.font-btn {
-    padding: 0.38rem 0.65rem;
-    font-size: 0.75rem; font-weight: 700;
-    color: var(--text-m);
-    transition: background var(--tr), color var(--tr);
+.fs-btn:hover    { background: var(--accent-light); color: var(--accent); border-color: var(--accent); }
+.fs-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+.fs-display {
+    min-width: 3.2rem; text-align: center;
+    font-size: 0.85rem; font-weight: 600;
+    color: var(--accent);
+    background: var(--accent-light);
+    border-radius: var(--r-full);
+    padding: 0.2rem 0.6rem;
 }
-.font-btn:hover  { background: var(--accent-light); color: var(--accent); }
-.font-btn:disabled { opacity: 0.35; cursor: not-allowed; }
 
 /* Two-column page layout */
 .surah-page { display: flex; flex-direction: column; min-height: 100vh; }
@@ -967,8 +974,6 @@ input  { font-family: inherit; }
     color: var(--text-h); flex: 1; word-spacing: 0.08em;
     transition: font-size var(--tr), color var(--tr-slow);
 }
-.arabic-font-sm .ayah-arabic { --arabic-size: var(--arabic-sm); }
-.arabic-font-lg .ayah-arabic { --arabic-size: var(--arabic-lg); }
 
 /* Bengali translation text */
 .ayah-bn-text {
@@ -1199,7 +1204,6 @@ input  { font-family: inherit; }
     .main-content    { padding-left: 1rem; padding-right: 1rem; }
     .tab-btn         { padding: 0.8rem 1rem; font-size: 0.875rem; }
     .ayah-card       { padding: 0.875rem 0.875rem 0.75rem; }
-    .font-controls   { display: none; }
 }
 
 /* ============================================================
