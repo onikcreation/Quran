@@ -82,7 +82,7 @@
     --arabic-md: 30px;
     --arabic-lg: 38px;
     --arabic-size: var(--arabic-md);
-    --arabic-font-family: 'Amiri', 'Scheherazade New', serif;
+    --arabic-font-family: 'Amiri Quran', 'Scheherazade New', serif;
 }
 
 /* Dark theme */
@@ -1714,8 +1714,9 @@ body.audio-playing .main-footer { padding-bottom: 72px; }
 
 /* ============================================================
    32. ARABIC FONT FAMILY VARIABLE
+   Amiri Quran: Uthmanic script with correct lam-alif ligatures
    ============================================================ */
-:root { --arabic-font-family: 'Amiri', 'Scheherazade New', serif; }
+:root { --arabic-font-family: 'Amiri Quran', 'Scheherazade New', serif; }
 
 /* ============================================================
    33. INLINE LANGUAGE TOGGLE (বাং / EN per ayah translation row)

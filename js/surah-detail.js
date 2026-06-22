@@ -26,7 +26,7 @@ let settings = {
     translationEdition:  'en.sahih',
     showTransliteration: false,
     autoExpandTafsir:    false,
-    arabicFont:          'Amiri',
+    arabicFont:          'Amiri Quran',
 };
 
 let translationLang = 'bn'; // 'bn' | 'en' — controlled by inline toggle per ayah row
