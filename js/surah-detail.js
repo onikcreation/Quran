@@ -326,7 +326,7 @@ function populateParaDropdown() {
     const paras = getParaList();
     const sel   = document.getElementById('sd-para');
     if (!sel) return;
-    sel.innerHTML = '<option value="">— পারা নির্বাচন করুন —</option>' +
+    sel.innerHTML = '<option value="">— পারা —</option>' +
         paras.map(p =>
             `<option value="${p.surah}:${p.ayah}">${toBengaliNumber(p.num)}. ${p.name}</option>`
         ).join('');
