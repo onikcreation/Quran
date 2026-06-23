@@ -570,8 +570,8 @@ function renderAyahs() {
             ${(bnText || enText) ? `
             <div class="ayah-trans-row">
                 <div class="ayah-trans-texts">
-                    ${bnText ? `<p class="ayah-trans-text trans-lang-bn-text">${escapeHtml(bnText)}<span class="ayah-ref"> [${escapeHtml(surahBnName)}: ${bnNum}]</span></p>` : ''}
-                    ${enText ? `<p class="ayah-trans-text trans-lang-en-text">${escapeHtml(enText)}<span class="ayah-ref"> [${enName}: ${ayah.numberInSurah}]</span></p>` : ''}
+                    ${bnText ? `<p class="ayah-trans-text trans-lang-bn-text">${escapeHtml(bnText)}<span class="ayah-ref">[সূরা নং ${toBengaliNumber(currentSurahId)}, ${escapeHtml(surahBnName)}, আয়াত ${bnNum}]</span></p>` : ''}
+                    ${enText ? `<p class="ayah-trans-text trans-lang-en-text">${escapeHtml(enText)}<span class="ayah-ref">[Surah No. ${currentSurahId}, ${enName}, Ayah ${ayah.numberInSurah}]</span></p>` : ''}
                 </div>
             </div>` : ''}
 
