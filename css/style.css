@@ -951,15 +951,18 @@ input  { font-family: inherit; }
 }
 .sih-skeleton { display: flex; flex-direction: column; gap: 6px; }
 .sih-inner {
-    display: flex; align-items: flex-start;
-    justify-content: space-between; gap: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 0.6rem;
 }
-.sih-left { flex: 1; min-width: 0; }
+.sih-left { min-width: 0; }
 .sih-title {
     font-family: 'Noto Sans Bengali', sans-serif;
     font-size: 1.1rem; font-weight: 700;
     margin-bottom: 0.2rem;
-    display: flex; align-items: baseline; gap: 0.45rem; flex-wrap: wrap;
+    display: flex; align-items: baseline; justify-content: center; gap: 0.45rem; flex-wrap: wrap;
 }
 .sih-arabic-inline {
     font-family: var(--arabic-font-family);
@@ -968,9 +971,9 @@ input  { font-family: inherit; }
 .sih-meaning {
     font-size: 0.8rem; opacity: 0.78;
     font-family: 'Noto Sans Bengali', sans-serif;
-    margin-bottom: 0.45rem;
+    margin-bottom: 0.25rem;
 }
-.sih-tags { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; }
+.sih-tags { display: flex; align-items: center; justify-content: center; gap: 0.4rem; flex-wrap: wrap; }
 .sih-tag {
     font-size: 0.7rem; padding: 0.15rem 0.55rem;
     border-radius: var(--r-full);
@@ -1083,7 +1086,9 @@ input  { font-family: inherit; }
 /* Action bar */
 .ayah-action-bar {
     display: flex; align-items: center;
+    justify-content: center;
     gap: 0.3rem; flex-wrap: wrap;
+    margin-top: 0.1rem;
 }
 .ayah-action-btn {
     display: inline-flex; align-items: center; gap: 0.25rem;
@@ -1155,12 +1160,14 @@ input  { font-family: inherit; }
     color: #8B6914;
     font-family: 'Noto Sans Bengali', sans-serif;
     margin-bottom: 0.3rem;
+    text-align: center;
 }
 [data-theme="dark"] .tafsir-heading { color: #D4A017; }
 .tafsir-text {
     font-family: 'Noto Sans Bengali', 'Inter', sans-serif;
     font-size: var(--trans-size); line-height: 1.85;
     color: var(--text-b); font-style: italic;
+    text-align: center;
 }
 
 /* Bottom prev/next nav */
@@ -1537,8 +1544,7 @@ input  { font-family: inherit; }
    ============================================================ */
 .sih-right {
     display: flex; flex-direction: column;
-    align-items: flex-end; gap: 0.35rem;
-    flex-shrink: 0;
+    align-items: center; gap: 0.35rem;
 }
 .full-audio-btn {
     display: inline-flex; align-items: center; gap: 0.3rem;
@@ -1567,6 +1573,7 @@ input  { font-family: inherit; }
     font-family: 'Noto Sans Bengali', sans-serif;
     font-size: 0.86rem; color: var(--text-m);
     font-style: italic; line-height: 1.75;
+    text-align: center;
     padding: 0.3rem 0 0.35rem;
     border-bottom: 1px dashed var(--border);
     margin-bottom: 0.35rem;
@@ -1812,16 +1819,18 @@ body:not(.trans-lang-en) .trans-lang-en-text { display: none; }
 
 .ayah-trans-row {
     display: flex;
-    align-items: flex-start;
-    gap: 8px;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.45rem;
     margin: 0.55rem 0 0;
 }
-.ayah-trans-texts { flex: 1; min-width: 0; }
+.ayah-trans-texts { width: 100%; order: 2; }
 .ayah-trans-text {
     margin: 0;
     font-size: var(--trans-size);
     line-height: 1.7;
     color: var(--text-b);
+    text-align: center;
     transition: color var(--tr-slow);
 }
 [data-theme="dark"] .ayah-trans-text { color: var(--text-b); }
@@ -1829,8 +1838,8 @@ body:not(.trans-lang-en) .trans-lang-en-text { display: none; }
 .ayah-lang-toggle {
     display: flex;
     gap: 3px;
-    flex-shrink: 0;
-    margin-top: 3px;
+    order: 1;
+    justify-content: center;
 }
 .ltg-btn {
     padding: 2px 7px;
@@ -1869,4 +1878,5 @@ body:not(.trans-lang-en) .ltg-btn[data-lang="bn"]:hover { color: #fff; }
     text-transform: uppercase;
     margin-bottom: 0.3rem;
     opacity: 0.75;
+    text-align: center;
 }
