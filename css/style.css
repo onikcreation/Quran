@@ -752,7 +752,7 @@ input  { font-family: inherit; }
 
 /* Main reading area — full width, centered */
 .surah-main {
-    max-width: 900px;
+    max-width: 1200px;
     margin: 0 auto;
     width: 100%;
     padding: 1.25rem 1.25rem 2.5rem;
@@ -771,7 +771,7 @@ input  { font-family: inherit; }
     transition: background var(--tr-slow), border-color var(--tr-slow);
 }
 .snb-inner {
-    max-width: 900px;
+    max-width: 1200px;
     margin: 0 auto;
     padding: 0.5rem 1.25rem;
     display: flex;
@@ -1002,7 +1002,7 @@ html[data-theme="light"] .bookmark-inner {
    14. SURAH DETAIL — Info header, bismillah, ayah cards
    ============================================================ */
 
-/* Surah info header — hero image style */
+/* Surah info header — full-width hero (same structure as index hero section) */
 .surah-info-header {
     background-image:
         linear-gradient(to bottom, rgba(5,10,20,0.62) 0%, rgba(5,10,20,0.88) 100%),
@@ -1011,9 +1011,7 @@ html[data-theme="light"] .bookmark-inner {
     background-size: cover;
     background-position: center 40%;
     color: #fff;
-    border-radius: var(--r-lg);
-    padding: 2rem 1.25rem 1.5rem;
-    margin-bottom: 0.875rem;
+    padding: 2.5rem 0 2rem;
     text-align: center;
     position: relative;
     overflow: hidden;
@@ -1028,14 +1026,16 @@ html[data-theme="light"] .bookmark-inner {
     background-size: 80px 80px, 60px 60px;
     pointer-events: none;
 }
-.sih-skeleton { display: flex; flex-direction: column; gap: 6px; }
+.sih-skeleton {
+    display: flex; flex-direction: column; gap: 6px;
+    max-width: 1200px; margin: 0 auto; padding: 0 1.25rem;
+}
+.sih-sk-title { height: 20px; width: 55%; border-radius: 5px; margin: 0 auto; }
+.sih-sk-sub   { height: 13px; width: 32%; border-radius: 4px; margin: 0 auto; }
 .sih-inner {
     position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: 0.5rem;
+    display: flex; flex-direction: column; align-items: center; text-align: center; gap: 0.5rem;
+    max-width: 1200px; margin: 0 auto; padding: 0 1.25rem;
 }
 .sih-left { min-width: 0; }
 .sih-arabic-name {
@@ -2094,4 +2094,26 @@ body:not(.trans-lang-en) .ltg-btn[data-lang="bn"]:hover { color: #fff; }
     background: var(--accent-light);
     color: var(--accent);
     border-color: var(--accent);
+}
+
+/* ============================================================
+   36. HEADER LOGO (Onik Creation)
+   ============================================================ */
+.header-logo-link {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    text-decoration: none;
+    opacity: 0.9;
+    transition: opacity var(--tr), transform var(--tr);
+}
+.header-logo-link:hover {
+    opacity: 1;
+    transform: scale(1.04);
+}
+.header-logo {
+    height: 30px;
+    width: auto;
+    object-fit: contain;
+    display: block;
 }
