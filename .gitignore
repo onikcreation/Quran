@@ -24,3 +24,6 @@ build/
 # Environment
 .env
 .env.local
+
+# Local notes only — not pushed to GitHub
+README.md
