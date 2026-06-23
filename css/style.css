@@ -231,7 +231,9 @@ input  { font-family: inherit; }
     text-decoration: none;
     color: inherit;
     flex-shrink: 0;
+    transition: opacity var(--tr);
 }
+a.brand:hover { opacity: 0.8; }
 .brand-icon {
     width: 36px; height: 36px;
     border-radius: var(--r-md);
